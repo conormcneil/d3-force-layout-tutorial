@@ -5,173 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
-    <title>d3 tree</title>
+    <title>Force Layout Example 1</title>
 </head>
 
 <style>
 
 .node {
-  cursor: pointer;
-}
-
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node text {
-  font: 10px sans-serif;
+    fill: #ccc;
+    stroke: #fff;
+    stroke-width: 2px;
 }
 
 .link {
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 1.5px;
+    stroke: #777;
+    stroke-width: 2px;
 }
 
 </style>
+
+
 <body>
 <script>
 
-var margin = {top: 20, right: 120, bottom: 20, left: 120},
-    width = 960 - margin.right - margin.left,
-    height = 800 - margin.top - margin.bottom;
+// define the dimensions of the visualization
+var width = 800,
+    height = 800;
 
-var i = 0,
-    duration = 750,
-    root;
+// define the data
+// data for force layout requires to data arrays:
+    // the first array, 'nodes', contains the objects that are teh focal points of the visualization.
+    // the second, 'links', identifies all the links between the nodes (mathematical term is 'edges').
 
-var tree = d3.layout.tree()
-    .size([height, width]);
+// for the simplest possible example, we define two nodes.
+    // as far as d3 is concerned, nodes are arbitrary objects. normally the objects would not be
+    // initialized with 'x' and 'y' properties like below. when those properties are present, they tell
+    // d3 where to place the nodes before the force layout starts its magic.
+    // more typically, they're left out of the nodes and d3 picks random locations for each node. 
+    // we're defining them here so we can get a consistent application of the layout which lets us 
+    // see the effects of different properties.
 
-var diagonal = d3.svg.diagonal()
-    .projection(function(d) { return [d.y, d.x]; });
+var nodes = [
+    { x:   width/3, y: height/2},
+    { x: 2*width/3, y: height/2},
+];
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.right + margin.left)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+// the 'links' array contains objects with a 'source' and a 'target' property.
+// the values of those properties are the indices in the 'nodes' array of the
+// two endpoints of the link
 
-d3.json("flare.json", function(error, flare) {
-  if (error) throw error;
+var links = [
+    { source: 0, target: 1}
+];
 
-  root = flare;
-  root.x0 = height / 2;
-  root.y0 = 0;
+// here's where the code begins. we start off by creating an svg container
+// to hold the visualization. we only need to specify the dimensions
+// of this container.
 
-  function collapse(d) {
-    if (d.children) {
-      d._children = d.children;
-      d._children.forEach(collapse);
-      d.children = null;
-    }
-  }
+var svg = d3.select('body').append('svg')
+    .attr('width',width)
+    .attr('height',height);
 
-  root.children.forEach(collapse);
-  update(root);
+// now we create a force layout object and define its properties.
+// those include the dimensions of the visualization and the arrays 
+// of nodes and links
+
+var force = d3.layout.force()
+    .size([width,height])
+    .nodes(nodes)
+    .links(links);
+
+// there is one more property of the layout we need to define: 'linkDistance'.
+// that's generally a configurable value and, for a first example, we'd normally
+// leave it at its default. 
+// unfortunately, the default value results in a visualization that's not especially clear.
+// the parameter defines the distance (normally in pixels) that we'd like to have
+// between nodes that are connected. (it is, thus, the length we'd like our
+// links to have.)
+
+force.linkDistance(width/2);
+
+// next we'll add the nodes and links to the visualization.
+// note that we're just sticking them into the svg container at this point.
+// we start with the links. the order here is important because we want the nodes
+// to appear "on top of" the links. svg doesn't really have a convenient equivalent
+// to html's 'z-index'; instead it relies on the order of the elements in the markup.
+// by adding the nodes _after_ the links we ensure that nodes appear on top of links.
+
+// links are pretty simple. they're just svg lines, and we're not even going to specify
+// their coordinates. (we'll let the force layout take care of that.)
+// without any coordinates, the lines won't even be visible, but the markup will 
+// be sitting inside the svg container ready and waiting for the force layout.
+
+var link = svg.selectAll('.link')
+    .data(links)
+    .enter().append('line')
+    .attr('class','link');
+
+// now the nodes. each node is drawn as a circle.
+
+var node = svg.selectAll('.node')
+    .data(nodes)
+    .enter().append('circle')
+    .attr('class','node');
+
+// we're about to tell the force layout to start its calculations.
+// we do, however, want to know when those calculations are complete.
+// so before we kick things off we'll define a function that we want the layout
+// to call once the calculations are done
+
+force.on('end', function() {
+    
+    // when this function executes, the force layout calculations have concluded.
+    // the layout will have set various properties in our nodes and links objects
+    // that we can use to position them within the svg container.
+    
+    // fifrst let's reposition the nodes. as the force layout runs it updates
+    // the 'x' and 'y' properties that define where the node should be centered.
+    // to move the node, we set the appropriate svg attributes to their new values.
+    // we also have to give the node a non-zero radius so that it's visible
+    // in the container.
+    
+    node.attr('r', width/25)
+        .attr('cx', function(d) { return d.x; })
+        .attr('cy', function(d) { return d.y; });
+    
+    // we also need to update positions of the links. 
+    // for those elements, the force layout sets the 'source' and 'target'
+    // properties, specifying 'x' and 'y' values in each case.
+    
+    link.attr('x1', function(d) { return d.source.x; })
+        .attr('y1', function(d) { return d.source.y; })
+        .attr('x2', function(d) { return d.target.x; })
+        .attr('y2', function(d) { return d.target.y; })
 });
 
-d3.select(self.frameElement).style("height", "800px");
+// ok, everything is set up now so it's time to turn
+// things over to the force layout. HERE WE GOOOOOOO
 
-function update(source) {
-
-  // Compute the new tree layout.
-  var nodes = tree.nodes(root).reverse(),
-      links = tree.links(nodes);
-
-  // Normalize for fixed-depth.
-  nodes.forEach(function(d) { d.y = d.depth * 180; });
-
-  // Update the nodes…
-  var node = svg.selectAll("g.node")
-      .data(nodes, function(d) { return d.id || (d.id = ++i); });
-
-  // Enter any new nodes at the parent's previous position.
-  var nodeEnter = node.enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-      .on("click", click);
-
-  nodeEnter.append("circle")
-      .attr("r", 1e-6)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-  nodeEnter.append("text")
-      .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-      .attr("dy", ".35em")
-      .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-      .text(function(d) { return d.name; })
-      .style("fill-opacity", 1e-6);
-
-  // Transition nodes to their new position.
-  var nodeUpdate = node.transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
-
-  nodeUpdate.select("circle")
-      .attr("r", 4.5)
-      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
-
-  nodeUpdate.select("text")
-      .style("fill-opacity", 1);
-
-  // Transition exiting nodes to the parent's new position.
-  var nodeExit = node.exit().transition()
-      .duration(duration)
-      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
-      .remove();
-
-  nodeExit.select("circle")
-      .attr("r", 1e-6);
-
-  nodeExit.select("text")
-      .style("fill-opacity", 1e-6);
-
-  // Update the links…
-  var link = svg.selectAll("path.link")
-      .data(links, function(d) { return d.target.id; });
-
-  // Enter any new links at the parent's previous position.
-  link.enter().insert("path", "g")
-      .attr("class", "link")
-      .attr("d", function(d) {
-        var o = {x: source.x0, y: source.y0};
-        return diagonal({source: o, target: o});
-      });
-
-  // Transition links to their new position.
-  link.transition()
-      .duration(duration)
-      .attr("d", diagonal);
-
-  // Transition exiting nodes to the parent's new position.
-  link.exit().transition()
-      .duration(duration)
-      .attr("d", function(d) {
-        var o = {x: source.x, y: source.y};
-        return diagonal({source: o, target: o});
-      })
-      .remove();
-
-  // Stash the old positions for transition.
-  nodes.forEach(function(d) {
-    d.x0 = d.x;
-    d.y0 = d.y;
-  });
-}
-
-// Toggle children on click.
-function click(d) {
-  if (d.children) {
-    d._children = d.children;
-    d.children = null;
-  } else {
-    d.children = d._children;
-    d._children = null;
-  }
-  update(d);
-}
+force.start();
 
 </script>
+</body>
+</html>
