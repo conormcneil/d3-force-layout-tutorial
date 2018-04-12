@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
-    <title>Force Layout Example 1</title>
+    <title>Force Layout Example 2</title>
 </head>
 
 <style>
@@ -28,34 +28,9 @@
 <script>
 
 // define the dimensions of the visualization
+
 var width = 800,
     height = 800;
-
-// define the data
-// data for force layout requires to data arrays:
-    // the first array, 'nodes', contains the objects that are teh focal points of the visualization.
-    // the second, 'links', identifies all the links between the nodes (mathematical term is 'edges').
-
-// for the simplest possible example, we define two nodes.
-    // as far as d3 is concerned, nodes are arbitrary objects. normally the objects would not be
-    // initialized with 'x' and 'y' properties like below. when those properties are present, they tell
-    // d3 where to place the nodes before the force layout starts its magic.
-    // more typically, they're left out of the nodes and d3 picks random locations for each node. 
-    // we're defining them here so we can get a consistent application of the layout which lets us 
-    // see the effects of different properties.
-
-var nodes = [
-    { x:   width/3, y: height/2},
-    { x: 2*width/3, y: height/2},
-];
-
-// the 'links' array contains objects with a 'source' and a 'target' property.
-// the values of those properties are the indices in the 'nodes' array of the
-// two endpoints of the link
-
-var links = [
-    { source: 0, target: 1}
-];
 
 // here's where the code begins. we start off by creating an svg container
 // to hold the visualization. we only need to specify the dimensions
@@ -64,6 +39,80 @@ var links = [
 var svg = d3.select('body').append('svg')
     .attr('width',width)
     .attr('height',height);
+
+// before we do anything else, let's define the data for the visualization
+
+var graph = {
+    "nodes": [  { "x": 208.992345, "y": 273.053211 },
+                { "x": 595.98896,  "y":  56.377057 },
+                { "x": 319.568434, "y": 278.523637 },
+                { "x": 214.494264, "y": 214.893585 },
+                { "x": 482.664139, "y": 340.386773 },
+                { "x":  84.078465, "y": 192.021902 },
+                { "x": 196.952261, "y": 370.798667 },
+                { "x": 107.358165, "y": 435.15643  },
+                { "x": 401.168523, "y": 443.407779 },
+                { "x": 508.368779, "y": 386.665811 },
+                { "x": 355.93773,  "y": 460.158711 },
+                { "x": 283.630624, "y":  87.898162 },
+                { "x": 194.771218, "y": 436.366028 },
+                { "x": 477.520013, "y": 337.547331 },
+                { "x": 572.98129,  "y": 453.668459 },
+                { "x": 106.717817, "y": 235.990363 },
+                { "x": 265.064649, "y": 396.904945 },
+                { "x": 452.719997, "y": 137.886092 }
+            ],
+    "links": [  { "target": 11, "source":  0 },
+                { "target":  3, "source":  0 },
+                { "target": 10, "source":  0 },
+                { "target": 16, "source":  0 },
+                { "target":  1, "source":  0 },
+                { "target":  3, "source":  0 },
+                { "target":  9, "source":  0 },
+                { "target":  5, "source":  0 },
+                { "target": 11, "source":  0 },
+                { "target": 13, "source":  0 },
+                { "target": 16, "source":  0 },
+                { "target":  3, "source":  1 },
+                { "target":  9, "source":  1 },
+                { "target": 12, "source":  1 },
+                { "target":  4, "source":  2 },
+                { "target":  6, "source":  2 },
+                { "target":  8, "source":  2 },
+                { "target": 13, "source":  2 },
+                { "target": 10, "source":  3 },
+                { "target": 16, "source":  3 },
+                { "target":  9, "source":  3 },
+                { "target":  7, "source":  3 },
+                { "target": 11, "source":  5 },
+                { "target": 13, "source":  5 },
+                { "target": 12, "source":  5 },
+                { "target":  8, "source":  6 },
+                { "target": 13, "source":  6 },
+                { "target": 10, "source":  7 },
+                { "target": 11, "source":  7 },
+                { "target": 17, "source":  8 },
+                { "target": 13, "source":  8 },
+                { "target": 11, "source": 10 },
+                { "target": 16, "source": 10 },
+                { "target": 13, "source": 11 },
+                { "target": 14, "source": 12 },
+                { "target": 14, "source": 12 },
+                { "target": 14, "source": 12 },
+                { "target": 15, "source": 12 },
+                { "target": 16, "source": 12 },
+                { "target": 15, "source": 14 },
+                { "target": 16, "source": 14 },
+                { "target": 15, "source": 14 },
+                { "target": 16, "source": 15 },
+                { "target": 16, "source": 15 },
+                { "target": 17, "source": 16 }
+            ]
+    };
+
+// Extract the nodes and links from the data.
+var nodes = graph.nodes,
+    links = graph.links;
 
 // now we create a force layout object and define its properties.
 // those include the dimensions of the visualization and the arrays 
@@ -82,7 +131,7 @@ var force = d3.layout.force()
 // between nodes that are connected. (it is, thus, the length we'd like our
 // links to have.)
 
-force.linkDistance(width/2);
+force.linkDistance(width/3.05);
 
 // next we'll add the nodes and links to the visualization.
 // note that we're just sticking them into the svg container at this point.
@@ -125,7 +174,7 @@ force.on('end', function() {
     // we also have to give the node a non-zero radius so that it's visible
     // in the container.
     
-    node.attr('r', width/25)
+    node.attr('r', width/100)
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; });
     
