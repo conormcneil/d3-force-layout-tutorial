@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
-    <title>Force Layout Example 2</title>
+    <title>Force Layout Example 3</title>
 </head>
 
 <style>
@@ -21,10 +22,24 @@
     stroke-width: 2px;
 }
 
+button {
+    position: absolute;
+    width: 30px;
+}
+button#slow {
+    margin-left: 40px;
+}
+
 </style>
 
 
 <body>
+    <button id='advance' title='Advance Layout One Increment'>
+       <i class='fa fa-step-forward'></i>
+   </button>
+   <button id='slow'    title='Run Layout in Slow Motion'>
+       <i class='fa fa-play'></i>
+   </button>
 <script>
 
 // define the dimensions of the visualization
@@ -140,58 +155,136 @@ force.linkDistance(width/3.05);
 // to html's 'z-index'; instead it relies on the order of the elements in the markup.
 // by adding the nodes _after_ the links we ensure that nodes appear on top of links.
 
-// links are pretty simple. they're just svg lines, and we're not even going to specify
-// their coordinates. (we'll let the force layout take care of that.)
-// without any coordinates, the lines won't even be visible, but the markup will 
-// be sitting inside the svg container ready and waiting for the force layout.
+// links are pretty simple. they're just svg lines. we're going to position the
+// lines according to the centers of their source and target nodes.
+// note that the 'source' and 'target' properties are indices into the 'nodes'
+// array. that's how our JSON is structured and that's how d3's force layout 
+// expects its inputs. as soon as the layout begins executing, however,
+// it's going to replace those properties with references to the actual
+// node objects instead of indices.
 
 var link = svg.selectAll('.link')
     .data(links)
     .enter().append('line')
-    .attr('class','link');
+    .attr('class','link')
+    .attr('x1', function(d) { return nodes[d.source].x; })
+    .attr('y1', function(d) { return nodes[d.source].y; })
+    .attr('x2', function(d) { return nodes[d.target].x; })
+    .attr('y2', function(d) { return nodes[d.target].y; })
 
-// now the nodes. each node is drawn as a circle.
+// now it's the nodes turn. each node is drawn as a circle and given a radius
+// and initial position within the svg container.
+// as is normal with svg circles, the position is specified by the 'cx' and 'cy'
+// attributes, which define the center of the circle.
+// we actually don't have to position the nodes to start off, as the force layout
+// is going to immediately move them. but this makes it a little easier
+// to see what's going on before we start the layout executing.
 
 var node = svg.selectAll('.node')
     .data(nodes)
     .enter().append('circle')
-    .attr('class','node');
+    .attr('class','node')
+    .attr('r', width/100)
+    .attr('cx', function(d) { return d.x; })
+    .attr('cy', function(d) { return d.y; });
 
-// we're about to tell the force layout to start its calculations.
-// we do, however, want to know when those calculations are complete.
-// so before we kick things off we'll define a function that we want the layout
-// to call once the calculations are done
+// before we get into the force layout operation itself, we define a variable
+// that indicates whether or not we're animating the operation.
+// initially, it's false.
 
-force.on('end', function() {
+var animating = false;
+
+// we'll also define a variable that specifies the duration
+// of each animation step (in milliseconds).
+
+var animationStep = 400;
+
+// next, we define a function that executes at each
+// iteration of the force layout.
+
+force.on('tick', function() {
     
-    // when this function executes, the force layout calculations have concluded.
-    // the layout will have set various properties in our nodes and links objects
-    // that we can use to position them within the svg container.
+    // when this function executes, the force layout
+    // calculations have been updated. the layout will
+    // have set various properties in our nodes and 
+    // links objects that we can use to position them
+    // within the svg container.
     
-    // fifrst let's reposition the nodes. as the force layout runs it updates
-    // the 'x' and 'y' properties that define where the node should be centered.
-    // to move the node, we set the appropriate svg attributes to their new values.
-    // we also have to give the node a non-zero radius so that it's visible
-    // in the container.
+    // first let's reposition the nodes. as the force
+    // layout runs it updates the 'x' and 'y' properties
+    // that define where the node should be centered.
+    // to move the node, we set the appropriate svg
+    // attributes to their new values.
     
-    node.attr('r', width/100)
+    // because we want to emphasize how the nodes and
+    // links move, we use a transition to move them to
+    // their positions instead of simply setting the 
+    // values abruptly.
+    
+    node.transition().ease('linear').duration(animationStep)
         .attr('cx', function(d) { return d.x; })
         .attr('cy', function(d) { return d.y; });
     
-    // we also need to update positions of the links. 
-    // for those elements, the force layout sets the 'source' and 'target'
-    // properties, specifying 'x' and 'y' values in each case.
+    // we also need to update positions of the links.
+    // for those elements, the force layout sets the
+    // 'source' and 'target' properties, specifying
+    // 'x' and 'y' values in each case.
     
-    link.attr('x1', function(d) { return d.source.x; })
+    // here's where you can see how the force layout has
+    // changed the 'source' and 'target' properties of
+    // the links. now that the layout has executed at least
+    // one iteration, the indices have been replaced by
+    // references to the node objects.
+    
+    link.transition().ease('linear').duration(animationStep)
+        .attr('x1', function(d) { return d.source.x; })
         .attr('y1', function(d) { return d.source.y; })
         .attr('x2', function(d) { return d.target.x; })
-        .attr('y2', function(d) { return d.target.y; })
+        .attr('y2', function(d) { return d.target.y; });
+    
+    // we only show one tick at a time, so stop the layout for now.
+    
+    force.stop();
+    
+    // if we're animating the layout, continue after
+    // a delay to allow the animation to take effect.
+    
+    if (animating) {
+        setTimeout(
+            function() { force.start(); },
+            animationStep
+        );
+    }
+    
 });
 
-// ok, everything is set up now so it's time to turn
-// things over to the force layout. HERE WE GOOOOOOO
+// now let's take care of the user interaction controls.
+// we'll add functions to respond to clicks on the individual buttons.
 
-force.start();
+// when the user clicks on the "Advance" button, we start the force layout
+// (the tick handler will stop the layout after one iteration)
+
+d3.select('#advance').on('click', force.start);
+
+// when the user clicks on the "Play" button, we're going to
+// run the force layout until it concludes.
+
+d3.select('#slow').on('click', function() {
+    
+    // since the buttons don't have any effect any more,
+    // disable them.
+    
+    d3.selectAll('button').attr('disabled','disabled');
+    
+    // indicate that the animation is in progress.
+    
+    animating = true;
+    
+    // start the animation
+    
+    force.start();
+    
+});
 
 </script>
 </body>
