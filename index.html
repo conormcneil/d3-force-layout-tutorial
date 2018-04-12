@@ -27,13 +27,13 @@ button {
     width: 30px;
 }
 button#slow {
-    margin-left: 40px;
+    margin-left: 28px;
 }
 button#play {
     margin-top: 54px;
 }
 button#reset {
-    amrgin-top: 80px;
+    margin-top: 80px;
 }
 </style>
 
@@ -61,7 +61,7 @@ var width = 800,
 // we'll also define a variable that specifies the duration
 // of each animation step (in milliseconds).
 
-var animationStep = 100;
+var animationStep = 10;
 
 // next define the main object for the layout. we'll also
 // define a couple of objects to keep track of the d3 selections
@@ -118,10 +118,10 @@ var initForce = function() {
     // throughout the visualization.
     
     var dataNodes = [
-        { x:   width/3, y:   height/3},
-        { x:   width/3, y: 2*height/3},
-        { x: 2*width/3, y:   height/3},
-        { x: 2*width/3, y: 2*height/3},
+        { x:   width/3, y:   height/3, graph: 0 },
+        { x:   width/3, y: 2*height/3, graph: 0 },
+        { x: 2*width/3, y:   height/3, graph: 1 },
+        { x: 2*width/3, y: 2*height/3, graph: 1 },
     ];
     
     // the 'links' array contains objects with a 'source' and a 'target'
@@ -135,8 +135,8 @@ var initForce = function() {
     // property to indicate which graph "owns" the link.
     
     var dataLinks = [
-        { source: 0, target: 1, graph: 0 },
-        { source: 2, target: 3, graph: 1 }
+        { source: 0, target: 1 },
+        { source: 2, target: 3 }
     ];
     
     // now we create a force layout object and define its properties.
@@ -163,8 +163,26 @@ var initForce = function() {
     // also lets us define it as a function. When we do that, we
     // can set a different value for each link.
     
-    force.linkDistance(function(link) {
-        return link.graph === 0 ? height/2 : height/4;
+    force.linkDistance(height/6);
+    
+    // to highlight the effect of 'charge', we reduce the rigidity
+    // of the links. More about this property in another example.
+    
+    force.linkStrength(0.1);
+    
+    // here's the part where we make the two graphs differ. because
+    // we're looking att the 'charge' property, that's what we
+    // want to vary between the graphs. Most often this property is
+    // set to a constant value for an entire visualization, but D3
+    // also lets us define it as a function. When we do that, we
+    // can set a different value for each node.
+
+    // Negative charge values indicate repulsion, which is generally
+    // desirable for force-directed graphs. (Positive values indicate
+    // attraction and can be helpful for other visualization types.)
+    
+    force.charge(function(node) {
+        return node.graph === 0 ? -30 : -300;
     });
     
     // Next we'll add the nodes and links to the visualization.
