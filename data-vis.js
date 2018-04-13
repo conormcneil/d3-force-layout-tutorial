@@ -6,7 +6,7 @@ var fill = d3.scale.category20();
 
 var force = d3.layout.force()
     .charge(-1000)
-    .linkDistance(300)
+    .linkDistance(350)
     .linkStrength(1)
     .size([width, height]);
 
@@ -19,19 +19,22 @@ var links = svg.selectAll('.link')
     .enter().append('line')
     .attr('class','link');
 
-var nodes = svg.selectAll('.node')
+var nodes = svg.selectAll('g')
     .data(dataNodes)
-    .enter().append('circle')
-        .attr('class','node')
+    .enter().append('g')
+    .attr('class','node')
+nodes
+    .append('circle')
         .attr('r', radius - 0.75)
         .style('fill', function(d) { return fill(d.group); })
         .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
-        .call(force.drag)
 nodes
     .append('text')
-    .attr('x',function(d) { return d.x; })
-    .attr('y',function(d) { return d.y; })
-    .text(function(d) { return d.name[0]; })
+        .attr('dx',function(d) { return d.x; })
+        .attr('dy',function(d) { return d.y; })
+        .text(function(d) { return d.name[0]; })
+
+nodes.call(force.drag)
 
 force
     .nodes(dataNodes)
@@ -53,8 +56,10 @@ function tick(e) {
         .attr('x2', function(d) { return d.target.x; })
         .attr('y2', function(d) { return d.target.y; })
 
-    nodes
-        .attr('cx', function(d) { return d.x; })
-        .attr('cy', function(d) { return d.y; });
-
+    svg.selectAll('.node')
+        .attr('transform',function(d) {
+            let x = d.x + radius;
+            let y = d.y;
+            return `translate(${x},${y}) rotate(0)`;
+        });
 };
