@@ -7,24 +7,15 @@
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
     <script src="classes.js" charset="utf-8"></script>
+    <script src="nodes-links.js" charset="utf-8"></script>
     <script src="data-vis.js" charset="utf-8" async defer></script>
     <title>Force Layout Example 4</title>
 </head>
 
 <style>
 
-.node {
-    fill: #ccc;
-    stroke: #fff;
-    stroke-width: 2px;
-}
-
-.node.red {
-    fill: #cc0000;
-}
-
-.node.blue {
-    fill: #0000cc;
+svg {
+    border: 1px solid black;
 }
 
 .link {
@@ -32,36 +23,10 @@
     stroke-width: 2px;
 }
 
-button {
-    position: absolute;
-    width: 30px;
-}
-button#slow {
-    margin-left: 28px;
-}
-button#play {
-    margin-top: 54px;
-}
-button#reset {
-    margin-top: 80px;
-}
 </style>
 
 
 <body>
-
-    <button id='advance' title='Advance Layout One Increment'>
-       <i class='fa fa-step-forward'></i>
-   </button>
-   <button id='slow' title='Run Layout in Slow Motion'>
-       <i class='fa fa-play'></i>
-   </button>
-   <button id='play' title='Run Layout at Full Speed'>
-        <i class='fa fa-fast-forward'></i>
-    </button>
-    <button id='reset' title='Reset Layout to Beginning'>
-        <i class='fa fa-undo'></i>
-    </button>
 
 </body>
 </html>
