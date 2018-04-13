@@ -18,16 +18,22 @@ var dataNodes = _classes.map(e => {
 
 var dataLinks = [];
 
-_classes.map((e,idx) => {
+dataNodes.map((e,idx) => {
     
-    let links = e['DD_Association'];
+    let targets = e['DD_Association'];
 
-    if (links && links.length) links.map(i => {
-        let lid = i['local_identifier'][0];
+    if (targets && targets.length) targets.map(target => {
+        let targetLid = target['local_identifier'][0];
 
         // search for lid in dataNodes array
-        let match = dataNodes.find(el => el['local_identifier'][0] === lid );
-        if (match) dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
+        let match = dataNodes.find(el => el['local_identifier'][0] === targetLid );
+        if (match) {
+            if (!e.children) e.children = [];
+            e.children.push(targetLid);
+            dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
+        }
     });
     
 });
+
+console.log(dataNodes);
