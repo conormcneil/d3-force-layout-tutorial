@@ -26,7 +26,7 @@ var nodes = svg.selectAll('g')
 nodes
     .append('circle')
         .attr('r', radius - 0.75)
-        .style('fill', function(d) { 
+        .style('fill', function(d) {
             return d.className == 'class' ? fill(d.group) : 'white';
         })
         .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
@@ -59,8 +59,8 @@ function tick(e) {
         .attr('y2', function(d) { return d.target.y; })
 
     svg.selectAll('.node')
-        .attr('transform',function(d) {
-            let x = d.x + radius;
+        .attr('transform', function(d) {
+            let x = d.x;
             let y = d.y;
             return `translate(${x},${y}) rotate(0)`;
         });
