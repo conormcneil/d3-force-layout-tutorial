@@ -5,7 +5,7 @@ var width = 1500,
 var fill = d3.scale.category20();
 
 var force = d3.layout.force()
-    .charge(-120)
+    .charge(-1000)
     .linkDistance(300)
     .linkStrength(1)
     .size([width, height]);
@@ -41,11 +41,13 @@ force
 
 function tick(e) {
 
-    // var k = -1 * 12 * e.alpha;
-    var k = 12 * e.alpha;
+    var k = 10 * e.alpha;
 
     links
-        .each(function(d) { d.source.x -= k, d.target.x += k; })
+        .each(function(d,idx) {
+            d.source.x -= 3*k;
+            d.target.x += 3*k; 
+        })
         .attr('x1', function(d) { return d.source.x; })
         .attr('y1', function(d) { return d.source.y; })
         .attr('x2', function(d) { return d.target.x; })
