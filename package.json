@@ -1,0 +1,24 @@
+{
+  "name": "dictionary-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/conormcneil/d3-force-layout-tutorial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/conormcneil/d3-force-layout-tutorial/issues"
+  },
+  "homepage": "https://github.com/conormcneil/d3-force-layout-tutorial#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "path": "^0.12.7"
+  }
+}
