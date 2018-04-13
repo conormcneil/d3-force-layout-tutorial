@@ -1,7 +1,5 @@
 var nodes = null,
-    links = null,
-    width = 800,
-    height = 800;
+    links = null;
     
 var dataNodes = _classes.map(e => {
     let links = e['DD_Association'];

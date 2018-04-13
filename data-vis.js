@@ -1,12 +1,12 @@
-var width = 1500,
-    height = 700,
-    radius = 20;
+var width = 4000,
+    height = 3000,
+    radius = 5;
 
 var fill = d3.scale.category20();
 
 var force = d3.layout.force()
     .charge(-1000)
-    .linkDistance(350)
+    .linkDistance(35)
     .linkStrength(1)
     .size([width, height]);
 
