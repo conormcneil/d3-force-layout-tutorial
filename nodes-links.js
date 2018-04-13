@@ -3,18 +3,7 @@ var nodes = null,
     width = 800,
     height = 800;
     
-var dataNodes = _classes.map((e,idx) => {
-    
-    if (idx % 2 === 0) {
-        e['x'] = (idx + 1) * (width/9);
-        e['y'] = 80;
-    } else {
-        e['x'] = 90;
-        e['y'] = ((height * (idx + 1)) / _classes.length);
-    }
-    
-    return e;
-});
+var dataNodes = _classes;
 
 var dataLinks = [];
 
