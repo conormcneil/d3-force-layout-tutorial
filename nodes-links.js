@@ -3,7 +3,18 @@ var nodes = null,
     width = 800,
     height = 800;
     
-var dataNodes = _classes;
+var dataNodes = _classes.map(e => {
+    let links = e['DD_Association'];
+    
+    if (links && links.length) {
+        e.className = 'class';
+    } else {
+        e.className = 'attribute';
+    }
+    
+    return e;
+    
+});
 
 var dataLinks = [];
 

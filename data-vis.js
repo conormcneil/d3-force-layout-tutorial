@@ -26,7 +26,9 @@ var nodes = svg.selectAll('g')
 nodes
     .append('circle')
         .attr('r', radius - 0.75)
-        .style('fill', function(d) { return fill(d.group); })
+        .style('fill', function(d) { 
+            return d.className == 'class' ? fill(d.group) : 'white';
+        })
         .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
 nodes
     .append('text')
