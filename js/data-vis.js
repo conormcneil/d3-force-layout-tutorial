@@ -28,10 +28,36 @@ function initForce() {
     nodes
         .append('circle')
             .attr('r', radius)
+            .attr('class','circle')
+            .attr('id',function(d) {
+                return d.local_identifier[0].replace('.','-');
+            })
             .style('fill', function(d) {
                 return d.className == 'class' ? fill(d.group) : 'white';
             })
             .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
+            .on('click',function(node) {
+                // set all fills to default values
+                d3.selectAll('.circle').style('fill',function(d) {
+                    return d.className == 'class' ? fill(d.group) : 'white';
+                });
+                
+                // customize new fills
+                // fill selected node
+                d3.select(this).style('fill','red');
+                // fill child nodes
+                let childNodes = getDescendents(node);
+                // console.log(childNodes);
+                if (childNodes && childNodes.length) childNodes.map(child => {
+                    child = child.replace('.','-');
+                    d3.select(`#${child}`).style('fill','red')
+                })
+            });
+            
+            function getDescendents(_n) {
+                return _n.children;
+            };
+            
     nodes
         .append('text')
             .attr('dx',function(d) { return d.x; })
