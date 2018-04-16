@@ -1,6 +1,6 @@
-var width = 1200,
-height = 800,
-radius = 10;
+var width = $(document).width() - 10,
+    height = $(document).height() - 10,
+    radius = 10;
 
 var svg = d3.select('body').append('svg')
 .attr('width',width)
@@ -12,8 +12,7 @@ function initForce() {
 
     var force = d3.layout.force()
         .charge(-2000)
-        .linkDistance(35)
-        .linkStrength(0.25)
+        .linkStrength(0.75)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
