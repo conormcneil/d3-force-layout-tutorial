@@ -10,13 +10,15 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 
-app.get('/', (request, response) => {
-  response.send('Hello from Express!')
-})
-
 app.post('/', (req, res) => {
-    console.log(req.body);
-    res.send('good post!')
+    
+    let ns = req.body.id;
+    
+    fs.readFile(`./json/${ns}.json`, 'utf8', function(err,data) {
+        console.log(data);
+        res.json(data);
+    });
+    
 })
 
 app.listen(port, (err) => {
