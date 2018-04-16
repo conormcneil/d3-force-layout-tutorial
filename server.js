@@ -15,7 +15,6 @@ app.post('/', (req, res) => {
     let ns = req.body.id;
     
     fs.readFile(`./json/${ns}.json`, 'utf8', function(err,data) {
-        console.log(data);
         res.json(data);
     });
     
