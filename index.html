@@ -7,7 +7,7 @@
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
-    <script src="ldd-js/particle.js" charset="utf-8"></script>
+    <script src="ldd-js/img.js" charset="utf-8"></script>
     <script src="nodes-links.js" charset="utf-8"></script>
     <script src="data-vis.js" charset="utf-8" async defer></script>
     <script src="client.js" charset="utf-8" async defer></script>
@@ -27,11 +27,31 @@ svg {
 .node {
     cursor: pointer;
 }
+.buttons {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    border: 1px solid blue;
+    background: lightblue;
+    padding: 5px;
+}
+button {
+    cursor: pointer;
+}
 
 </style>
 
 
 <body>
+    
+    <!-- Buttons -->
+    <div class="buttons">
+        <button id="particle">Particle</button>
+        <button id="img">Imaging</button>
+        <button id="geom">Geometry</button>
+        <button id="rings">Rings</button>
+        <button id="wave">Wave</button>
+    </div>
 
 </body>
 </html>

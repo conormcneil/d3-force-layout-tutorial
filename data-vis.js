@@ -1,6 +1,6 @@
 var width = 4000,
     height = 3000,
-    radius = 5;
+    radius = 10;
 
 var fill = d3.scale.category20();
 
@@ -25,7 +25,7 @@ var nodes = svg.selectAll('g')
     .attr('class','node')
 nodes
     .append('circle')
-        .attr('r', radius - 0.75)
+        .attr('r', radius)
         .style('fill', function(d) {
             return d.className == 'class' ? fill(d.group) : 'white';
         })
