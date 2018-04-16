@@ -11,9 +11,9 @@ var fill = d3.scale.category20();
 function initForce() {
 
     var force = d3.layout.force()
-        .charge(-1000)
+        .charge(-2000)
         .linkDistance(35)
-        .linkStrength(1)
+        .linkStrength(0.25)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -52,8 +52,11 @@ function initForce() {
 
         links
             .each(function(d,idx) {
-                d.source.x -= 3*k;
-                d.target.x += 3*k; 
+                d.source.x -= 2*k;
+                d.target.x += 2*k;
+                
+                d.source.y -=   k;
+                d.source.y +=   k;
             })
             .attr('x1', function(d) { return d.source.x; })
             .attr('y1', function(d) { return d.source.y; })
