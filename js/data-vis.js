@@ -1,13 +1,17 @@
 var width = $(document).width() - 10,
     height = $(document).height() - 10,
-    radius = 20,
+    radius = 5,
     columnCount,
     activeNode = null,
     _col = 1; // root elements exist in this column
 
 var svg = d3.select('body').append('svg')
 .attr('width',width)
-.attr('height',height);
+.attr('height',height)
+.call(d3.behavior.zoom().on("zoom", function () {
+    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+}))
+.append('g');
 
 var fill = d3.scale.category20();
 
@@ -17,7 +21,7 @@ function initForce() {
     activeNode = null;
 
     var force = d3.layout.force()
-        .charge(-2000)
+        .charge(-5000)
         .linkStrength(0.5)
         .size([width, height]);
 
@@ -65,7 +69,7 @@ function initForce() {
         nodes
             .each(function(d,idx) {
                 let className = d3.select(this).attr('class');
-                let colWidth = width / (_col + 1);
+                let colWidth = width / (_col) + 100;
                 
                 if (d.rootNode) return d.x = colWidth;
                 else if (/col-/g.test(className)) {
@@ -77,13 +81,6 @@ function initForce() {
             .attr('y1', function(d) { return d.y; })
 
         links
-            // .each(function(d,idx) {
-            //     d.source.x -= 2*k;
-            //     d.target.x += 2*k;
-            // 
-            //     d.source.y -=   k;
-            //     d.source.y +=   k;
-            // })
             .attr('x1', function(d) { return d.source.x; })
             .attr('y1', function(d) { return d.source.y; })
             .attr('x2', function(d) { return d.target.x; })
