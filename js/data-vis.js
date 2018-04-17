@@ -42,7 +42,6 @@ function initForce() {
                 d3.select(this).style('fill','red');
                 // fill child nodes
                 let childNodes = getDescendents(node);
-                // console.log(childNodes);
                 if (childNodes && childNodes.length) childNodes.map(child => {
                     child = child.replace('.','-');
                     d3.select(`#${child}`).style('fill','red')
