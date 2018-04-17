@@ -15,7 +15,7 @@ function initForce() {
 
     var force = d3.layout.force()
         .charge(-2000)
-        .linkStrength(0.25)
+        .linkStrength(0.5)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -80,7 +80,7 @@ function initForce() {
                 let className = d3.select(this).attr('class');
                 let colWidth = width / (_col + 1);
                 
-                if (d.rootNode) return d.x = 100;
+                if (d.rootNode) return d.x = colWidth;
                 else if (/col-/g.test(className)) {
                     let col = className.match(/[0-9]/g).join('');
                     return d.x = col * colWidth;
