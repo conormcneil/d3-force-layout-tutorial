@@ -1,7 +1,9 @@
 var width = $(document).width() - 10,
     height = $(document).height() - 10,
-    radius = 10,
-    columnCount;
+    radius = 20,
+    columnCount,
+    activeNode = null,
+    _col = 1; // root elements exist in this column
 
 var svg = d3.select('body').append('svg')
 .attr('width',width)
@@ -12,7 +14,7 @@ var fill = d3.scale.category20();
 function initForce() {
     
     _col = 1;
-    let activeNode = null;
+    activeNode = null;
 
     var force = d3.layout.force()
         .charge(-2000)
@@ -28,33 +30,11 @@ function initForce() {
         .data(dataNodes)
         .enter().append('g')
         .classed('node',true)
-        .on('click',function(node) {
-            if (activeNode == node) {
-                activeNode = null;
-                return defaultFills();
-            }
-            // set all fills to default values
-            defaultFills();
-            
-            // customize new fills
-            // fill selected node
-            d3.select(`#${this.id}`)
-                .select('.circle')
-                .style('fill','red');
-            // fill child nodes
-            let childNodes = node.children;
-            if (childNodes && childNodes.length) childNodes.map(child => {
-                child = child.replace('.','-');
-                d3.select(`#${child}`)
-                    .select('.circle')
-                    .style('fill','red')
-            });
-            
-            activeNode = node;
-        })
+        .on('click',toggleNodes)
         .attr('id',function(d) {
             return d.local_identifier[0].replace('.','-');
-        });
+        })
+        
     nodes
         .append('circle')
             .attr('r', radius)
@@ -124,7 +104,6 @@ function initForce() {
     };
 };
 
-let _col = 1; // root elements exist in this column
 // set node classes for use later during positioning
     // begin with root nodes
 function nodeClasses(_nodes) {
@@ -174,4 +153,55 @@ function defaultNodeFills(d) {
 };
 function defaultFills() {
     d3.selectAll('.circle').style('fill',defaultNodeFills);
+};
+
+function toggleNodes(node) {
+    if (activeNode == node) {
+        activeNode = null;
+        return defaultFills();
+    }
+    // set all fills to default values
+    defaultFills();
+    
+    // customize new fills
+    // fill selected node
+    d3.select(`#${this.id}`)
+        .select('.circle')
+        .style('fill','red');
+
+    let childNodes = node.children;
+    let grandchildren = [];
+    let desc;
+    
+    if (childNodes && childNodes.length) grandchildren = getGrandkids();
+    
+    function getGrandkids() {
+        let _g2 = [];
+        childNodes.map(child => {
+            let _test = dataNodes.find(dn => {
+                return dn.local_identifier[0] == child;
+            });
+            if (_test && _test.children) {
+                _test.children.map(gkid => {
+                    if (_g2.indexOf(gkid) == -1) {
+                        _g2.push(gkid);
+                    }
+                })
+            }
+        })
+        return _g2;
+    }
+    
+    if (grandchildren.length) desc = childNodes.concat(grandchildren);
+    else desc = childNodes;
+    
+    if (desc && desc.length) desc.map(_d => {
+
+        _d = _d.replace('.','-');
+        d3.select(`#${_d}`)
+            .select('.circle')
+            .style('fill','red');
+    });
+    
+    activeNode = node;
 };
