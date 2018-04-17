@@ -18,6 +18,7 @@
   "homepage": "https://github.com/conormcneil/d3-force-layout-tutorial#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "path": "^0.12.7"
   }
