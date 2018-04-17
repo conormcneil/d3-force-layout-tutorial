@@ -52,7 +52,7 @@ function initForce() {
             .attr('dy',function(d) { return d.y; })
             .text(function(d) { return d.name[0]; })
 
-    nodes.call(force.drag)
+    // nodes.call(force.drag)
     
     force
         .nodes(dataNodes)
