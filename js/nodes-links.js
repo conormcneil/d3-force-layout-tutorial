@@ -1,5 +1,6 @@
 var nodes = null,
     links = null,
+    rootNodes = [],
     dataNodes = [],
     dataLinks = [];
     
@@ -40,6 +41,16 @@ function initNodesAndLinks() {
         
     });
     
+    setRootNodes();
     initForce();
 };
 
+function setRootNodes() {
+    dataNodes.map((node,idx) => {
+        let _match = dataLinks.find(link => link.target == idx);
+        if (!_match) {
+            node.rootNode = true;
+            rootNodes.push(node);
+        };
+    });
+};
