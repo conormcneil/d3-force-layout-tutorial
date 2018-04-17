@@ -24,6 +24,21 @@ function initForce() {
         .data(dataNodes)
         .enter().append('g')
         .attr('class','node')
+        .on('click',function(node) {
+            // set all fills to default values
+            d3.selectAll('.circle').style('fill',defaultNodeFills);
+            
+            // customize new fills
+            // fill selected node
+            let thisLid = this.children[0].id;
+            d3.select(`#${thisLid}`).style('fill','red');
+            // fill child nodes
+            let childNodes = node.children;
+            if (childNodes && childNodes.length) childNodes.map(child => {
+                child = child.replace('.','-');
+                d3.select(`#${child}`).style('fill','red')
+            })
+        });
     nodes
         .append('circle')
             .attr('r', radius)
@@ -32,25 +47,7 @@ function initForce() {
                 return d.local_identifier[0].replace('.','-');
             })
             .style('fill', defaultNodeFills)
-            .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
-            .on('click',function(node) {
-                // set all fills to default values
-                d3.selectAll('.circle').style('fill',defaultNodeFills);
-                
-                // customize new fills
-                // fill selected node
-                d3.select(this).style('fill','red');
-                // fill child nodes
-                let childNodes = getDescendents(node);
-                if (childNodes && childNodes.length) childNodes.map(child => {
-                    child = child.replace('.','-');
-                    d3.select(`#${child}`).style('fill','red')
-                })
-            });
-            
-            function getDescendents(_n) {
-                return _n.children;
-            };
+            .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); });
             
     nodes
         .append('text')
