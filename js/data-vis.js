@@ -12,6 +12,7 @@ var fill = d3.scale.category20();
 function initForce() {
     
     _col = 1;
+    let activeNode = null;
 
     var force = d3.layout.force()
         .charge(-2000)
@@ -28,8 +29,12 @@ function initForce() {
         .enter().append('g')
         .classed('node',true)
         .on('click',function(node) {
+            if (activeNode == node) {
+                activeNode = null;
+                return defaultFills();
+            }
             // set all fills to default values
-            d3.selectAll('.circle').style('fill',defaultNodeFills);
+            defaultFills();
             
             // customize new fills
             // fill selected node
@@ -43,7 +48,9 @@ function initForce() {
                 d3.select(`#${child}`)
                     .select('.circle')
                     .style('fill','red')
-            })
+            });
+            
+            activeNode = node;
         })
         .attr('id',function(d) {
             return d.local_identifier[0].replace('.','-');
@@ -115,12 +122,6 @@ function initForce() {
         };
         
     };
-    
-    function defaultNodeFills(d) {
-        if (d.rootNode) return 'green';
-        else if (d.className == 'class') return fill(d.group);
-        else return 'white';
-    };
 };
 
 let _col = 1; // root elements exist in this column
@@ -165,4 +166,12 @@ function nodeClasses(_nodes) {
         }
     })
     if (nextCol.length) nodeClasses(nextCol);
-}
+};
+function defaultNodeFills(d) {
+    if (d.rootNode) return 'green';
+    else if (d.className == 'class') return fill(d.group);
+    else return 'white';
+};
+function defaultFills() {
+    d3.selectAll('.circle').style('fill',defaultNodeFills);
+};
