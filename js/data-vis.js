@@ -10,6 +10,8 @@ var svg = d3.select('body').append('svg')
 var fill = d3.scale.category20();
 
 function initForce() {
+    
+    _col = 1;
 
     var force = d3.layout.force()
         .charge(-2000)
