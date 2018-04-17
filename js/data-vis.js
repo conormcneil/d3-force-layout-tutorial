@@ -31,17 +31,11 @@ function initForce() {
             .attr('id',function(d) {
                 return d.local_identifier[0].replace('.','-');
             })
-            .style('fill', function(d) {
-                if (d.rootNode) return 'green';
-                else if (d.className == 'class') return fill(d.group);
-                else return 'white';
-            })
+            .style('fill', defaultNodeFills)
             .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
             .on('click',function(node) {
                 // set all fills to default values
-                d3.selectAll('.circle').style('fill',function(d) {
-                    return d.className == 'class' ? fill(d.group) : 'white';
-                });
+                d3.selectAll('.circle').style('fill',defaultNodeFills);
                 
                 // customize new fills
                 // fill selected node
@@ -97,4 +91,10 @@ function initForce() {
                 return `translate(${x},${y}) rotate(0)`;
             });
     };
+    
+    function defaultNodeFills(d) {
+        if (d.rootNode) return 'green';
+        else if (d.className == 'class') return fill(d.group);
+        else return 'white';
+    }
 };
