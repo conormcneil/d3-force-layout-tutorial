@@ -32,7 +32,9 @@ function initForce() {
                 return d.local_identifier[0].replace('.','-');
             })
             .style('fill', function(d) {
-                return d.className == 'class' ? fill(d.group) : 'white';
+                if (d.rootNode) return 'green';
+                else if (d.className == 'class') return fill(d.group);
+                else return 'white';
             })
             .style('stroke', function(d) { return d3.rgb(fill(d.group)).darker(); })
             .on('click',function(node) {
