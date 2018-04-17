@@ -15,7 +15,7 @@ function initForce() {
 
     var force = d3.layout.force()
         .charge(-2000)
-        .linkStrength(0.75)
+        .linkStrength(0.25)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -78,28 +78,25 @@ function initForce() {
         nodes
             .each(function(d,idx) {
                 let className = d3.select(this).attr('class');
-                
-                // if (className.match(/col-/g))
-                // console.log();
-                if (/col-/g.test(className)) {
-                    let col = className.match(/[0-9]/g)[0];
-                    return d.x = col * 100;
-                };
+                let colWidth = width / (_col + 1);
                 
                 if (d.rootNode) return d.x = 100;
-                (idx % 2 == 0) ? d.x = 2*width/5 : d.x = 3*width/5;
+                else if (/col-/g.test(className)) {
+                    let col = className.match(/[0-9]/g).join('');
+                    return d.x = col * colWidth;
+                };
             })
             .attr('x1', function(d) { return d.x; })
             .attr('y1', function(d) { return d.y; })
 
         links
-            .each(function(d,idx) {
-                d.source.x -= 2*k;
-                d.target.x += 2*k;
-                
-                d.source.y -=   k;
-                d.source.y +=   k;
-            })
+            // .each(function(d,idx) {
+            //     d.source.x -= 2*k;
+            //     d.target.x += 2*k;
+            // 
+            //     d.source.y -=   k;
+            //     d.source.y +=   k;
+            // })
             .attr('x1', function(d) { return d.source.x; })
             .attr('y1', function(d) { return d.source.y; })
             .attr('x2', function(d) { return d.target.x; })
@@ -114,7 +111,7 @@ function initForce() {
         
         if (firstTick) {
             firstTick = false;
-            nodeClasses();
+            nodeClasses(rootNodes);
         };
         
     };
@@ -123,35 +120,49 @@ function initForce() {
         if (d.rootNode) return 'green';
         else if (d.className == 'class') return fill(d.group);
         else return 'white';
-    }
+    };
 };
 
 let _col = 1; // root elements exist in this column
 // set node classes for use later during positioning
     // begin with root nodes
-function nodeClasses() {
+function nodeClasses(_nodes) {
+    let nextCol = [];
     _col++;
+    
     // for each root element, find its child elements
-    rootNodes.map(root => {
+    _nodes.map(root => {
         // this array (_children) is not the same as the dataNodes array
             // values that exist here must be mapped to dataNodes elements
             // and node classes are added there
         let _children = root['DD_Association'];
-        // console.log(_children);
         
         // check that each child exists as an element in dataNodes
-        _children.map(_child => {
-            dataNodes.find(dn => {
-                let _test = dn.local_identifier[0] == _child.local_identifier[0];
-                
-                if (_test) {
-                    let _lid = dn.local_identifier[0].replace('.','-');
-                    d3.select(`#${_lid}`)
-                        .attr('class',function(d) { return `node col-${_col}`; });
-                }
-                
-                return _test
-            })
-        });
+        if (_children && _children.length) {
+            _children.map(_child => {
+                dataNodes.find(dn => {
+                    let _test = dn.local_identifier[0] == _child.local_identifier[0];
+                    
+                    // if it exists, set its class
+                        // then pass it into array for storage
+                        // to be passed into recursive function upon completion of find() method
+                    if (_test) {
+                        let _lid = dn.local_identifier[0].replace('.','-');
+                        let _localNode = d3.select(`#${_lid}`)
+                            .attr('class',function(d) { 
+                                // console.log(d);
+                                return `node col-${_col}`; });
+                        
+                        // push node object to array of nodes in this column
+                            // perform the same sequence of steps for each node
+                            // in the new array
+                        nextCol.push(dn);
+                    }
+                    
+                    return _test;
+                })
+            });
+        }
     })
+    if (nextCol.length) nodeClasses(nextCol);
 }
