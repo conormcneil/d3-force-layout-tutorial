@@ -44,13 +44,26 @@ function initNodesAndLinks() {
             if (targetLid == 'XSChoice#') return;
 
             // search for lid in dataNodes array
-            let match = dataNodes.find(el => el['local_identifier'][0] === targetLid );
+            let match = dataNodes.find(el => {
+                let _output;
+                try {
+                    _output = el['local_identifier'][0] === targetLid;
+                } catch (e) {
+                    _output = el['identifier_reference'][0] === targetLid;
+                }
+                return _output;
+            });
             
             if (!match) {
+                console.log(target);
                 // create new node
                     // in pds namespace
                 target.className = 'attribute';
-                target.name = [target['local_identifier'][0].replace('pds.','')];
+                try {
+                    target.name = [target['local_identifier'][0].replace('pds.','')];
+                } catch (e) {
+                    target.name = [target['identifier_reference'][0].replace('pds.','')];
+                }
                 dataNodes.push(target);
                 // then create a link in dataLinks array
                 let _targetIdx = dataNodes.length - 1;

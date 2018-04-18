@@ -36,7 +36,16 @@ function initForce() {
         .classed('node', true)
         .on('click', toggleNodes)
         .attr('id', function(d) {
-            return d.local_identifier[0].replace('.', '-');
+            let _id;
+            
+            try {
+                _id = d['local_identifier'][0].replace('.', '-');
+            } catch (e) {
+                _id = d['identifier_reference'][0].replace('.', '-');
+            }
+            
+            
+            return _id;
         })
 
     nodes
@@ -157,7 +166,14 @@ function nodeClasses(_nodes) {
                     // then pass it into array for storage
                     // to be passed into recursive function upon completion of find() method
                     if (_match) {
-                        let _lid = dn.local_identifier[0].replace('.', '-');
+                        let _lid;
+                        
+                        try {
+                            _lid = dn['local_identifier'][0].replace('.', '-');
+                        } catch (e) {
+                            _lid = dn['identifier_reference'][0].replace('.', '-');
+                        }
+                        
                         let _localNode = d3.select(`#${_lid}`)
                             .attr('class', function(d) {
                                 // console.log(d);
