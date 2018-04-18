@@ -1,6 +1,6 @@
 var width = $(document).width() - 10,
     height = $(document).height() - 10,
-    radius = 10,
+    radius = 20,
     columnCount,
     activeNode = null,
     _col = 1; // root elements exist in this column
@@ -21,14 +21,16 @@ function initForce() {
     activeNode = null;
 
     var force = d3.layout.force()
-        .charge(-1000)
+        .charge(-2000)
         .linkStrength(1)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
         .data(dataLinks)
         .enter().append('line')
-        .attr('class', 'link');
+        .attr('class', 'link')
+        .style('stroke-width',2)
+        .style('stroke','black');
 
     var nodes = svg.selectAll('g')
         .data(dataNodes)
@@ -49,8 +51,9 @@ function initForce() {
         })
 
     nodes
-        .append('circle')
-        .attr('r', radius)
+        .append('ellipse')
+        .attr('rx', 5*radius)
+        .attr('ry',   radius)
         .attr('class', 'circle')
         .style('fill', defaultNodeFills)
         .style('stroke', function(d) {
@@ -84,7 +87,7 @@ function initForce() {
         nodes
             .each(function(d, idx) {
                 let className = d3.select(this).attr('class');
-                let colWidth = width / (_col);
+                let colWidth = 1.5*width / _col;
 
                 if (d.rootNode) return d.x = colWidth;
                 else if (/col-/g.test(className)) {
@@ -196,7 +199,7 @@ function nodeClasses(_nodes) {
 };
 
 function defaultNodeFills(d) {
-    if (d.rootNode) return 'green';
+    if (d.rootNode) return 'lightgreen';
     else if (d.className == 'class') return fill(d.group);
     else return 'white';
 };
@@ -212,6 +215,7 @@ function toggleNodes(node) {
     }
     // set all fills to default values
     defaultFills();
+    // defaultLinks();
 
     // customize new fills
     // fill selected node
