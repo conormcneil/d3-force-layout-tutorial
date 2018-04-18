@@ -42,13 +42,22 @@ function initNodesAndLinks() {
 
             // search for lid in dataNodes array
             let match = dataNodes.find(el => el['local_identifier'][0] === targetLid );
-            if (match) {
+            
+            if (!match) {
+                // create new node
+                    // in pds namespace
+                target.className = 'attribute';
+                target.name = [target['local_identifier'][0].replace('pds.','')];
+                dataNodes.push(target);
+                // then create a link in dataLinks array
+                let _targetIdx = dataNodes.length - 1;
+                dataLinks.push({ source: idx, target: _targetIdx });
+            } else {
                 if (!e.children) e.children = [];
                 e.children.push(targetLid);
                 dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
             }
         });
-        
     });
     
     setRootNodes();
