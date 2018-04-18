@@ -2,7 +2,8 @@ var nodes = null,
     links = null,
     rootNodes = [],
     dataNodes = [],
-    dataLinks = [];
+    dataLinks = [],
+    lidType;
     
 function initNodesAndLinks() {
     // remove old data
@@ -28,7 +29,16 @@ function initNodesAndLinks() {
         let targets = e['DD_Association'];
 
         if (targets && targets.length) targets.map(target => {
-            let targetLid = target['local_identifier'][0];
+            
+            let targetLid;
+            lidType = 'local_identifier';
+            
+            try {
+                targetLid = target[lidType][0];
+            } catch (e) {
+                lidType = 'identifier_reference';
+                targetLid = target[lidType][0];
+            }
 
             // search for lid in dataNodes array
             let match = dataNodes.find(el => el['local_identifier'][0] === targetLid );

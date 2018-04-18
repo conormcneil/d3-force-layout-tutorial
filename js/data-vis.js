@@ -21,8 +21,9 @@ function initForce() {
     activeNode = null;
 
     var force = d3.layout.force()
-        .charge(-5000)
-        .linkStrength(0.5)
+        .charge(-1000)
+        .linkStrength(.8)
+        .linkDistance(25)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -118,12 +119,27 @@ function nodeClasses(_nodes) {
         if (_children && _children.length) {
             _children.map(_child => {
                 dataNodes.find(dn => {
-                    let _test = dn.local_identifier[0] == _child.local_identifier[0];
+                    let dnLid,
+                        _childLid;
+                        
+                    try {
+                        dnLid = dn.local_identifier[0];
+                    } catch (e) {
+                        dnLid = dn.identifier_reference[0];
+                    }
+                    
+                    try {
+                        _childLid = _child.local_identifier[0];
+                    } catch (e) {
+                        _childLid = _child.identifier_reference[0];
+                    }
+                    
+                    let _match = dnLid == _childLid;
                     
                     // if it exists, set its class
                         // then pass it into array for storage
                         // to be passed into recursive function upon completion of find() method
-                    if (_test) {
+                    if (_match) {
                         let _lid = dn.local_identifier[0].replace('.','-');
                         let _localNode = d3.select(`#${_lid}`)
                             .attr('class',function(d) { 
@@ -136,7 +152,7 @@ function nodeClasses(_nodes) {
                         nextCol.push(dn);
                     }
                     
-                    return _test;
+                    return _match;
                 })
             });
         }
