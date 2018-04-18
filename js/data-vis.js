@@ -55,7 +55,7 @@ function initForce() {
         .attr('rx', 5*radius)
         .attr('ry',   radius)
         .attr('class', 'circle')
-        .style('fill', defaultNodeFills)
+        .style('fill', highlightNodes)
         .style('stroke', function(d) {
             return d3.rgb(fill(d.group)).darker();
         });
@@ -198,64 +198,76 @@ function nodeClasses(_nodes) {
     if (nextCol.length) nodeClasses(nextCol);
 };
 
-function defaultNodeFills(d) {
-    if (d.rootNode) return 'lightgreen';
-    else if (d.className == 'class') return fill(d.group);
-    else return 'white';
-};
-
-function defaultFills() {
-    d3.selectAll('.circle').style('fill', defaultNodeFills);
-};
-
 function toggleNodes(node) {
     if (activeNode == node) {
         activeNode = null;
-        return defaultFills();
+        // return defaultFills()
     }
-    // set all fills to default values
-    defaultFills();
-    // defaultLinks();
-
-    // customize new fills
-    // fill selected node
-    d3.select(`#${this.id}`)
-        .select('.circle')
-        .style('fill', 'red');
-
-    let childNodes = node.children;
-    let grandchildren = [];
-    let desc;
-
-    if (childNodes && childNodes.length) grandchildren = getGrandkids();
-
-    if (grandchildren.length) desc = childNodes.concat(grandchildren);
-    else desc = childNodes;
-
-    if (desc && desc.length) desc.map(_d => {
-
-        _d = _d.replace('.', '-');
-        d3.select(`#${_d}`)
-            .select('.circle')
-            .style('fill', 'red');
-    });
+    
+    let g1 = node['local_identifier'];
+    let g2 = node['children'];
+    let g = g1.concat(g2);
+    
+    highlightEdges(g);
+    highlightNodes();
 
     activeNode = node;
 };
 
-function getGrandkids() {
-    let _g2 = [];
-    childNodes.map(child => {
-        let _test = dataNodes.find(dn => {
-            return dn.local_identifier[0] == child;
+// edges
+let lineHighlightFill = 'red';
+let lineHighlightWidth = 5;
+let lineFill = 'green';
+let lineWidth = 1;
+// nodes
+let nodeHighlightFill = 'red';
+let activeNodes = []
+
+function highlightEdges(arr) {
+    let _edges = [];
+
+    // for each node, find all links where it is a source
+    arr.map(el => {
+        dataLinks.map(_link => {
+            let t = _link.source['local_identifier'][0];
+            
+            if (t == el) _edges.push(_link);
         });
-        if (_test && _test.children) {
-            _test.children.map(gkid => {
-                if (_g2.indexOf(gkid) == -1) {
-                    _g2.push(gkid);
+    });
+    
+    svg.selectAll('.link')
+        .style('stroke-width',l => {
+            let highlight = _edges.indexOf(l);
+            
+            return (highlight != -1) ? lineHighlightWidth : lineWidth;
+        })
+        .style('stroke',l => {
+            let highlight = _edges.indexOf(l);
+            
+            if (highlight != -1) return lineHighlightFill;
+        })
+        
+};
+
+function highlightNodes() {
+    svg.selectAll('.circle')
+        .style('fill',n => {
+            let _lid = n['local_identifier'][0];
+            
+            if (activeNodes.indexOf(_lid) != -1) {
+                // console.log('red');
+                return 'red';
+            } else if (n.rootNode) {
+                // console.log('lightgreen');
+                return 'lightgreen';
+            } else if (n.className == 'class') {
+                // console.log('group');
+                return fill(n.group);
+            } else {
+                if (_lid == 'pds.description') {
+                    console.log('here we are');
                 }
-            })
-        }
-    })
-    return _g2;
+                return 'white';
+            }
+        })
 }
