@@ -26,6 +26,7 @@ function initNodesAndLinks() {
 
     dataNodes.map((e,idx) => {
         
+        if (!e.children) e.children = [];
         let targets = e['DD_Association'];
 
         if (targets && targets.length) targets.map(target => {
@@ -60,7 +61,7 @@ function initNodesAndLinks() {
                 target.className = 'attribute';
                 try {
                     target.name = [target['local_identifier'][0].replace('pds.','')];
-                } catch (e) {
+                } catch (err) {
                     target.name = [target['identifier_reference'][0].replace('pds.','')];
                 }
                 dataNodes.push(target);
@@ -68,10 +69,9 @@ function initNodesAndLinks() {
                 let _targetIdx = dataNodes.length - 1;
                 dataLinks.push({ source: idx, target: _targetIdx });
             } else {
-                if (!e.children) e.children = [];
-                e.children.push(targetLid);
                 dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
             }
+            e.children.push(targetLid);
         });
     });
     
