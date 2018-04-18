@@ -21,8 +21,8 @@ function initForce() {
     activeNode = null;
 
     var force = d3.layout.force()
-        .charge(-2000)
-        .linkStrength(1)
+        .charge(-3000)
+        .linkStrength(0.5)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -229,23 +229,6 @@ function toggleNodes(node) {
 
     if (childNodes && childNodes.length) grandchildren = getGrandkids();
 
-    function getGrandkids() {
-        let _g2 = [];
-        childNodes.map(child => {
-            let _test = dataNodes.find(dn => {
-                return dn.local_identifier[0] == child;
-            });
-            if (_test && _test.children) {
-                _test.children.map(gkid => {
-                    if (_g2.indexOf(gkid) == -1) {
-                        _g2.push(gkid);
-                    }
-                })
-            }
-        })
-        return _g2;
-    }
-
     if (grandchildren.length) desc = childNodes.concat(grandchildren);
     else desc = childNodes;
 
@@ -259,3 +242,20 @@ function toggleNodes(node) {
 
     activeNode = node;
 };
+
+function getGrandkids() {
+    let _g2 = [];
+    childNodes.map(child => {
+        let _test = dataNodes.find(dn => {
+            return dn.local_identifier[0] == child;
+        });
+        if (_test && _test.children) {
+            _test.children.map(gkid => {
+                if (_g2.indexOf(gkid) == -1) {
+                    _g2.push(gkid);
+                }
+            })
+        }
+    })
+    return _g2;
+}
