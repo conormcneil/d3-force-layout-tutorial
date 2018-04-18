@@ -39,6 +39,9 @@ function initNodesAndLinks() {
                 lidType = 'identifier_reference';
                 targetLid = target[lidType][0];
             }
+            
+            // invalid 
+            if (targetLid == 'XSChoice#') return;
 
             // search for lid in dataNodes array
             let match = dataNodes.find(el => el['local_identifier'][0] === targetLid );
