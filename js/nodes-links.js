@@ -55,7 +55,6 @@ function initNodesAndLinks() {
             });
             
             if (!match) {
-                console.log(target);
                 // create new node
                     // in pds namespace
                 target.className = 'attribute';
