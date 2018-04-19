@@ -4,6 +4,16 @@ var width = $(document).width() - 10,
     columnCount,
     activeNode = null,
     _col = 1; // root elements exist in this column
+    
+// edges
+let lineHighlightFill = 'red';
+let lineHighlightWidth = 5;
+let lineFill = 'black';
+let lineWidth = 1;
+// nodes
+let nodeHighlightFill = 'red';
+let activeNodes = [];
+let nodeGen = [];
 
 var svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -55,10 +65,10 @@ function initForce() {
         .attr('rx', 5*radius)
         .attr('ry',   radius)
         .attr('class', 'circle')
-        .style('fill', highlightNodes)
         .style('stroke', function(d) {
             return d3.rgb(fill(d.group)).darker();
-        });
+        })
+        .style('fill', highlightNode);
 
     nodes
         .append('text')
@@ -88,7 +98,7 @@ function initForce() {
             .each(function(d, idx) {
                 let className = d3.select(this).attr('class');
                 let colWidth = 1.5*width / _col;
-
+            
                 if (d.rootNode) return d.x = colWidth;
                 else if (/col-/g.test(className)) {
                     let col = className.match(/[0-9]/g).join('');
@@ -199,75 +209,46 @@ function nodeClasses(_nodes) {
 };
 
 function toggleNodes(node) {
-    if (activeNode == node) {
-        activeNode = null;
-        // return defaultFills()
-    }
-    
     let g1 = node['local_identifier'];
     let g2 = node['children'];
-    let g = g1.concat(g2);
     
-    highlightEdges(g);
-    highlightNodes();
-
-    activeNode = node;
-};
-
-// edges
-let lineHighlightFill = 'red';
-let lineHighlightWidth = 5;
-let lineFill = 'green';
-let lineWidth = 1;
-// nodes
-let nodeHighlightFill = 'red';
-let activeNodes = []
-
-function highlightEdges(arr) {
-    let _edges = [];
-
-    // for each node, find all links where it is a source
-    arr.map(el => {
-        dataLinks.map(_link => {
-            let t = _link.source['local_identifier'][0];
-            
-            if (t == el) _edges.push(_link);
-        });
-    });
+    if (activeNode == node) {
+        activeNode = null;
+        nodeGen = [];
+    } else {
+        activeNode = node;
+        nodeGen = g1.concat(g2);
+    }
     
     svg.selectAll('.link')
-        .style('stroke-width',l => {
-            let highlight = _edges.indexOf(l);
-            
-            return (highlight != -1) ? lineHighlightWidth : lineWidth;
-        })
-        .style('stroke',l => {
-            let highlight = _edges.indexOf(l);
-            
-            if (highlight != -1) return lineHighlightFill;
-        })
-        
+        .style('stroke',highlightLine);
+    
+    svg.selectAll('.circle')
+        .style('fill',highlightNode);
 };
 
-function highlightNodes() {
-    svg.selectAll('.circle')
-        .style('fill',n => {
-            let _lid = n['local_identifier'][0];
-            
-            if (activeNodes.indexOf(_lid) != -1) {
-                // console.log('red');
-                return 'red';
-            } else if (n.rootNode) {
-                // console.log('lightgreen');
-                return 'lightgreen';
-            } else if (n.className == 'class') {
-                // console.log('group');
-                return fill(n.group);
-            } else {
-                if (_lid == 'pds.description') {
-                    console.log('here we are');
-                }
-                return 'white';
-            }
-        })
-}
+function highlightLine(_link) {
+    let _lid = _link.source['local_identifier'][0];
+    
+    if (nodeGen.indexOf(_lid) != -1) return lineHighlightFill;
+    else return lineFill;
+};
+
+function highlightNode(n) {
+    let _color,
+        _lid;
+    
+    try {
+        _lid = n['local_identifier'][0];
+    } catch (e) {
+        _lid = n['identifier_reference'][0];
+    }
+    
+    
+    if (activeNodes.indexOf(_lid) != -1) _color = 'red';
+    else if (n.rootNode) _color = 'lightgreen';
+    else if (n.className == 'class') _color = fill(n.group);
+    else _color = 'white';
+    
+    return _color;
+};
