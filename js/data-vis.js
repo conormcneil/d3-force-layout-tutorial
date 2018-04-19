@@ -96,7 +96,6 @@ function initForce() {
         .each(function(d, idx) {
             // configure horiontal (x) position
             let className = d3.select(this).attr('class');
-            // let colWidth = width / _col;
             let colWidth = 500;
 
             if (d.rootNode) d.x = colWidth - 300;
