@@ -209,15 +209,21 @@ function nodeClasses(_nodes) {
 };
 
 function toggleNodes(node) {
+    activeNodes = [];
+
     let g1 = node['local_identifier'];
     let g2 = node['children'];
+    let g3 = getNextGen(g2);
     
     if (activeNode == node) {
         activeNode = null;
         nodeGen = [];
     } else {
-        activeNode = node;
         nodeGen = g1.concat(g2);
+        activeNode = node;
+        activeNodes = activeNodes.concat(g1)
+            .concat(g2)
+            .concat(g3);
     }
     
     svg.selectAll('.link')
@@ -251,4 +257,17 @@ function highlightNode(n) {
     else _color = 'white';
     
     return _color;
+};
+
+function getNextGen(gen) {
+    let _nextGen = [];
+    
+    dataLinks.map(link => {
+        let _sourceLid = link.source['local_identifier'][0];
+        let _targetLid = link.target['local_identifier'][0];
+        
+        if (gen && gen.indexOf(_sourceLid) != -1 && _nextGen.indexOf(_targetLid) == -1) _nextGen.push(_targetLid);
+    });
+    
+    return _nextGen;
 };
