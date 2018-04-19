@@ -13,6 +13,7 @@ var width = $(document).width() - 10,
     // Nodes
     rx = 100, // x radius of ellipse
     ry = 30, // y radius of ellipse
+    verticalOffset = 50;
     verticalPadding = 5,
     verticalSpacing = ry * 2 + verticalPadding,
     nodeHighlightFill = 'orange',
@@ -95,16 +96,17 @@ function initForce() {
         .each(function(d, idx) {
             // configure horiontal (x) position
             let className = d3.select(this).attr('class');
-            let colWidth = width / _col;
+            // let colWidth = width / _col;
+            let colWidth = 500;
 
-            if (d.rootNode) d.x = colWidth;
+            if (d.rootNode) d.x = colWidth - 300;
             else if (/col-/g.test(className)) {
                 let col = className.match(/[0-9]/g).join('');
-                d.x = col * colWidth;
+                d.x = col * colWidth - 300;
             };
 
             // configure vertical (y) position
-            d.y = 300 + idx * verticalSpacing;
+            d.y = verticalOffset + idx * verticalSpacing;
         })
         .attr('x1', function(d) {
             return d.x;
