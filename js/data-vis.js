@@ -3,17 +3,26 @@ var width = $(document).width() - 10,
     radius = 20,
     columnCount,
     activeNode = null,
-    _col = 1; // root elements exist in this column
+    _col = 1, // root elements exist in this column
     
-// edges
-let lineHighlightFill = 'red';
-let lineHighlightWidth = 5;
-let lineFill = 'black';
-let lineWidth = 1;
-// nodes
-let nodeHighlightFill = 'red';
-let activeNodes = [];
-let nodeGen = [];
+    // Edges (Lines)
+    lineHighlightFill = 'pink',
+    lineHighlightWidth = 5,
+    lineFill = 'black',
+    lineWidth = 1,
+    
+    // Nodes
+    nodeHighlightFill = 'pink',
+    rootNodeFill = 'lightgreen',
+    classNodeFill = 'lightblue',
+    attributeNodeFill = 'white',
+    activeNodes = [],
+    nodeGen = [],
+    
+    // Force layout configuration
+    forceCharge = -3000,
+    forceLinkStrength = 0.5;
+
 
 var svg = d3.select('body').append('svg')
     .attr('width', width)
@@ -31,8 +40,8 @@ function initForce() {
     activeNode = null;
 
     var force = d3.layout.force()
-        .charge(-3000)
-        .linkStrength(0.5)
+        .charge(forceCharge)
+        .linkStrength(forceLinkStrength)
         .size([width, height]);
 
     var links = svg.selectAll('.link')
@@ -40,7 +49,7 @@ function initForce() {
         .enter().append('line')
         .attr('class', 'link')
         .style('stroke-width',2)
-        .style('stroke','black');
+        .style('stroke',lineFill);
 
     var nodes = svg.selectAll('g')
         .data(dataNodes)
@@ -250,11 +259,10 @@ function highlightNode(n) {
         _lid = n['identifier_reference'][0];
     }
     
-    
-    if (activeNodes.indexOf(_lid) != -1) _color = 'red';
-    else if (n.rootNode) _color = 'lightgreen';
-    else if (n.className == 'class') _color = fill(n.group);
-    else _color = 'white';
+    if (activeNodes.indexOf(_lid) != -1) _color = nodeHighlightFill;
+    else if (n.rootNode) _color = rootNodeFill;
+    else if (n.className == 'class') _color = classNodeFill;
+    else _color = attributeNodeFill;
     
     return _color;
 };
