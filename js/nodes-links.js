@@ -78,6 +78,7 @@ function initNodesAndLinks() {
     setRootNodes();
     sortCols(rootNodes);
     initForce();
+    drawGrid();
 };
 
 function setRootNodes() {
