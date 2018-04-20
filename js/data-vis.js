@@ -23,14 +23,19 @@ var width = $(document).width() - 10,
     nodeStroke = 'black',
     activeNodes = [],
     nodeGen = [];
-
+    
 var svg = d3.select('body').append('svg')
-    .attr('width', width)
-    .attr('height', height)
-    .append('g')
-    .attr('class','grid');
+        .attr('width',width)
+        .attr('height',height)
+        .append('g')
+        .attr('class','grid');
 
 function initForce() {
+    
+    svg = d3.select('svg').append('g')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('class','grid');
 
     _col = 1;
     activeNode = null;
@@ -199,8 +204,10 @@ function getNodeByLid(lid) {
 };
 
 function drawGrid() {
+    var sim = d3.select('svg');
+    
     var zoom = d3.zoom()
-        .scaleExtent([1,40])
+        .scaleExtent([0.1,10])
         .translateExtent([[-100,-100], [width + 90, height + 100]])
         .on('zoom',zoomed);
 
@@ -222,32 +229,29 @@ function drawGrid() {
         .tickSize(width)
         .tickPadding(8 - width);
 
-    var view = svg.append('rect')
-        .attr('class','view')
-        .attr('x',0.5)
-        .attr('y',0.5)
-        .attr('width', width - 1)
-        .attr('height', height - 1);
-
-    var gX = svg.append('g')
+    var gX = sim.append('g')
         .attr('class','axis axis--x')
         .call(xAxis);
 
-    var gY = svg.append('g')
+    var gY = sim.append('g')
         .attr('class','axis axis--y')
         .call(yAxis);
 
-    svg.call(zoom);
+    sim.call(zoom);
+    
+    d3.select('#resset').on('click',resetted);
 
     function zoomed() {
-        view.attr('transform',d3.event.transform);
         gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
         gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
+        svg.attr('transform',d3.event.transform);
     };
 
     function resetted() {
-        svg.transition()
+        sim.transition()
             .duration(750)
             .call(zoom.transform, d3.zoomIdentity);
     };
+    
+    initForce();
 };
