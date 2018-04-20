@@ -7,7 +7,6 @@ var nodes = null,
     
 function initNodesAndLinks() {
     // remove old data
-    svg.selectAll('*').remove();
     
     dataNodes = _classes.map(e => {
         let links = e['DD_Association'];

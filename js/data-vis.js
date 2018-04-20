@@ -26,9 +26,7 @@ var width = $(document).width() - 10,
     
 var svg = d3.select('body').append('svg')
         .attr('width',width)
-        .attr('height',height)
-        .append('g')
-        .attr('class','grid');
+        .attr('height',height);
 
 function initForce() {
     
@@ -205,10 +203,9 @@ function getNodeByLid(lid) {
 
 function drawGrid() {
     var sim = d3.select('svg');
-    
     var zoom = d3.zoom()
         .scaleExtent([0.1,10])
-        .translateExtent([[-100,-100], [width + 90, height + 100]])
+        .translateExtent([[-1.5*width,-2*height], [2.5*width, 2*height]])
         .on('zoom',zoomed);
 
     var x = d3.scaleLinear()
@@ -238,8 +235,6 @@ function drawGrid() {
         .call(yAxis);
 
     sim.call(zoom);
-    
-    d3.select('#resset').on('click',resetted);
 
     function zoomed() {
         gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
@@ -247,6 +242,7 @@ function drawGrid() {
         svg.attr('transform',d3.event.transform);
     };
 
+    // TODO repair and implement this
     function resetted() {
         sim.transition()
             .duration(750)
