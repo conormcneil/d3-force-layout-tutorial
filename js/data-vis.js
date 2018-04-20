@@ -24,7 +24,6 @@ var width = $(document).width() - 10,
     activeNodes = [],
     nodeGen = [];
 
-
 var svg = d3.select('body').append('svg')
     .attr('width', width)
     .attr('height', height)
@@ -43,15 +42,19 @@ function initForce() {
         .nodes(dataNodes)
         .links(dataLinks);
 
-    var links = svg.selectAll('.link')
-        .data(dataLinks)
+    var link = svg.selectAll('.link')
+        .data(dataLinks);
+        
+    var node = svg.selectAll('g')
+        .data(dataNodes);
+    
+    var linkEnter = link
         .enter().append('line')
         .attr('class', 'link')
         .style('stroke-width', lineStrokeWidth)
         .style('stroke', lineStroke);
 
-    var nodes = svg.selectAll('g')
-        .data(dataNodes)
+    var nodeEnter = node
         .enter().append('g')
         .classed('node', true)
         .on('click', toggleNodes)
@@ -68,32 +71,25 @@ function initForce() {
         });
 
     // configure class for each node
-    // corresponding to its position relative to root node
-    // this is used later for *horizontal* positioning of the nodes
     nodeClasses(rootNodes);
 
-    nodes
+    // configure behavior when nodes enter
+    // append ellipse to each node group
+    nodeEnter
         .append('ellipse')
         .attr('rx', rx)
         .attr('ry', ry)
         .attr('class', 'circle')
         .style('stroke', nodeStroke)
         .style('fill', highlightNode);
-
-    nodes
+    // append text to each node group
+    nodeEnter
         .append('text')
-        .attr('dx', function(d) {
-            return d.x;
-        })
-        .attr('dy', function(d) {
-            return d.y;
-        })
         .text(function(d) {
             return d.name[0];
         });
-
-    nodes
-        .each(function(d, idx) {
+    nodeEnter
+        .attr('transform',function(d, idx) {
             // configure horiontal (x) position
             let className = d3.select(this).attr('class');
             let colWidth = 500;
@@ -106,38 +102,25 @@ function initForce() {
 
             // configure vertical (y) position
             d.y = verticalOffset + idx * verticalSpacing;
-        })
+            return `translate(${d.x},${d.y})`;
+        });
+
+    // configure behavior when links enter
+    linkEnter
         .attr('x1', function(d) {
-            return d.x;
+            return getNodeByIdx(d.source).x;
         })
         .attr('y1', function(d) {
-            return d.y;
+            return getNodeByIdx(d.source).y;
+        })
+        .attr('x2', function(d) {
+            return getNodeByIdx(d.target).x;
+        })
+        .attr('y2', function(d) {
+            return getNodeByIdx(d.target).y;
         });
 
     force.start();
-
-    // position nodes and links
-    // NODES
-    nodes
-        .attr('transform', function(d) {
-            let x = d.x;
-            let y = d.y;
-            return `translate(${x},${y}) rotate(0)`;
-        });
-    // LINKS
-    links
-        .attr('x1', function(d) {
-            return d.source.x;
-        })
-        .attr('y1', function(d) {
-            return d.source.y;
-        })
-        .attr('x2', function(d) {
-            return d.target.x;
-        })
-        .attr('y2', function(d) {
-            return d.target.y;
-        });
 };
 
 // set node classes for use later during positioning
@@ -265,4 +248,8 @@ function getNextGen(gen) {
     });
 
     return _nextGen;
+};
+
+function getNodeByIdx(nodeIdx) {
+    return dataNodes[nodeIdx];
 };
