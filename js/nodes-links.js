@@ -76,6 +76,7 @@ function initNodesAndLinks() {
     });
     
     setRootNodes();
+    sortCols(rootNodes);
     initForce();
 };
 
@@ -87,4 +88,65 @@ function setRootNodes() {
             rootNodes.push(node);
         };
     });
+};
+
+// set col attribute on each node for use later during positioning
+// recursive function, begin with root nodes
+function sortCols(_nodes) {
+    let nextCol = [];
+    _col++;
+
+    // for each root element, find its child elements
+    _nodes.map(root => {
+        let _children = root['DD_Association'];
+
+        if (_children && _children.length) {
+            // check that each child exists as an element in dataNodes
+            _children.map(_child => {
+                dataNodes.find(dn => {
+                    let dnLid,
+                        _childLid;
+
+                    try {
+                        dnLid = dn.local_identifier[0];
+                    } catch (e) {
+                        dnLid = dn.identifier_reference[0];
+                    }
+
+                    try {
+                        _childLid = _child.local_identifier[0];
+                    } catch (e) {
+                        _childLid = _child.identifier_reference[0];
+                    }
+
+                    let _match = dnLid == _childLid;
+
+                    // if it exists, set its class
+                    // then pass it into array for storage
+                    // to be passed into recursive function upon completion of find() method
+                    if (_match) {
+                        let _lid;
+
+                        try {
+                            _lid = dn['local_identifier'][0];
+                        } catch (e) {
+                            _lid = dn['identifier_reference'][0];
+                        }
+
+                        let _localNode = getNodeByLid(_lid);
+                        _localNode.col = _col;
+
+                        // push node object to array of nodes in this column
+                        // perform the same sequence of steps for each node
+                        // in the new array
+                        nextCol.push(dn);
+                    }
+
+                    return _match;
+                })
+            });
+        }
+    });
+
+    if (nextCol.length) sortCols(nextCol);
 };

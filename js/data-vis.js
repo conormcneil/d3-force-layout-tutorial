@@ -32,6 +32,9 @@ var svg = d3.select('body').append('svg')
     }))
     .append('g');
 
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { return [d.y, d.x]; });
+
 function initForce() {
 
     _col = 1;
@@ -44,15 +47,22 @@ function initForce() {
 
     var link = svg.selectAll('.link')
         .data(dataLinks);
-        
+
     var node = svg.selectAll('g')
         .data(dataNodes);
-    
+
     var linkEnter = link
+        // .enter().insert('path','g')
         .enter().append('line')
         .attr('class', 'link')
         .style('stroke-width', lineStrokeWidth)
-        .style('stroke', lineStroke);
+        .style('stroke', lineStroke)
+        // .attr('d', function(d) {
+        //     console.log(getNodeByIdx(d.source).x);
+        //     var o = {x:d.source.x,y:d.source.y};
+        //     console.log(o);
+        //     return diagonal({source:o,target:o});
+        // });
 
     var nodeEnter = node
         .enter().append('g')
@@ -69,9 +79,6 @@ function initForce() {
 
             return _id;
         });
-
-    // configure class for each node
-    nodeClasses(rootNodes);
 
     // configure behavior when nodes enter
     // append ellipse to each node group
@@ -91,14 +98,11 @@ function initForce() {
     nodeEnter
         .attr('transform',function(d, idx) {
             // configure horiontal (x) position
-            let className = d3.select(this).attr('class');
             let colWidth = 500;
+            let xOffset = 300;
 
-            if (d.rootNode) d.x = colWidth - 300;
-            else if (/col-/g.test(className)) {
-                let col = className.match(/[0-9]/g).join('');
-                d.x = col * colWidth - 300;
-            };
+            if (d.rootNode) d.x = colWidth - xOffset;
+            else d.x = d.col * colWidth - xOffset;
 
             // configure vertical (y) position
             d.y = verticalOffset + idx * verticalSpacing;
@@ -121,70 +125,6 @@ function initForce() {
         });
 
     force.start();
-};
-
-// set node classes for use later during positioning
-// begin with root nodes
-function nodeClasses(_nodes) {
-    let nextCol = [];
-    _col++;
-
-    // for each root element, find its child elements
-    _nodes.map(root => {
-        let _children = root['DD_Association'];
-
-        // check that each child exists as an element in dataNodes
-        if (_children && _children.length) {
-            _children.map(_child => {
-                dataNodes.find(dn => {
-                    let dnLid,
-                        _childLid;
-
-                    try {
-                        dnLid = dn.local_identifier[0];
-                    } catch (e) {
-                        dnLid = dn.identifier_reference[0];
-                    }
-
-                    try {
-                        _childLid = _child.local_identifier[0];
-                    } catch (e) {
-                        _childLid = _child.identifier_reference[0];
-                    }
-
-                    let _match = dnLid == _childLid;
-
-                    // if it exists, set its class
-                    // then pass it into array for storage
-                    // to be passed into recursive function upon completion of find() method
-                    if (_match) {
-                        let _lid;
-
-                        try {
-                            _lid = dn['local_identifier'][0].replace('.', '-');
-                        } catch (e) {
-                            _lid = dn['identifier_reference'][0].replace('.', '-');
-                        }
-
-                        let _localNode = d3.select(`#${_lid}`)
-                            .attr('class', function(d) {
-                                // console.log(d);
-                                return `node col-${_col}`;
-                            });
-
-                        // push node object to array of nodes in this column
-                        // perform the same sequence of steps for each node
-                        // in the new array
-                        nextCol.push(dn);
-                    }
-
-                    return _match;
-                })
-            });
-        }
-    });
-
-    if (nextCol.length) nodeClasses(nextCol);
 };
 
 function toggleNodes(node) {
@@ -252,4 +192,18 @@ function getNextGen(gen) {
 
 function getNodeByIdx(nodeIdx) {
     return dataNodes[nodeIdx];
+};
+
+function getNodeByLid(lid) {
+    return dataNodes.find(d => {
+        let _o;
+        
+        try {
+            _o = d['local_identifier'][0] == lid;
+        } catch (e) {
+            _o = d['identifier_reference'][0] == lid;
+        }
+        
+        return  _o;
+    });
 };
