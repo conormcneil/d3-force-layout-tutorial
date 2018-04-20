@@ -27,23 +27,27 @@ var width = $(document).width() - 10,
 var svg = d3.select('body').append('svg')
     .attr('width', width)
     .attr('height', height)
-    .call(d3.behavior.zoom().on("zoom", function() {
-        svg.attr("transform", `translate(${d3.event.translate}) scale(${d3.event.scale})`)
-    }))
+    // .call(d3.behavior.zoom().on("zoom", function() {
+    //     svg.attr("transform", `translate(${d3.event.translate}) scale(${d3.event.scale})`)
+    // }))
     .append('g');
 
-var diagonal = d3.svg.diagonal()
-    .projection(function(d) { return [d.y, d.x]; });
+// var diagonal = d3.svg.diagonal()
+//     .projection(function(d) { return [d.y, d.x]; });
 
 function initForce() {
 
     _col = 1;
     activeNode = null;
 
-    var force = d3.layout.force()
-        .size([width, height])
-        .nodes(dataNodes)
-        .links(dataLinks);
+    var force = d3.forceSimulation()
+        .force('link', d3.forceLink().id(function(d) {
+            try {
+                return d['local_identifier'][0];
+            } catch (e) {
+                return d['identifier_reference'][0];
+            }
+        }));
 
     var link = svg.selectAll('.link')
         .data(dataLinks);
@@ -123,8 +127,6 @@ function initForce() {
         .attr('y2', function(d) {
             return getNodeByIdx(d.target).y;
         });
-
-    force.start();
 };
 
 function toggleNodes(node) {
