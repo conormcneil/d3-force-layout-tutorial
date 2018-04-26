@@ -386,7 +386,7 @@ function toggleNodes(node) {
 };
 
 function highlightLine(_link) {
-    let _lid = _link.source['local_identifier'][0];
+    let _lid = getNodeByIdx(_link.source)['local_identifier'][0];
 
     if (nodeGen.indexOf(_lid) != -1) return lineHighlightFill;
     else return lineStroke;
@@ -414,8 +414,8 @@ function getNextGen(gen) {
     let _nextGen = [];
 
     dataLinks.map(link => {
-        let _sourceLid = link.source['local_identifier'][0];
-        let _targetLid = link.target['local_identifier'][0];
+        let _sourceLid = getNodeByIdx(link.source)['local_identifier'][0];
+        let _targetLid = getNodeByIdx(link.target)['local_identifier'][0];
 
         if (gen && gen.indexOf(_sourceLid) != -1 && _nextGen.indexOf(_targetLid) == -1) _nextGen.push(_targetLid);
     });
