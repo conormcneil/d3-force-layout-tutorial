@@ -1,15 +1,17 @@
-var def = 'particle';
+var ldd = 'particle';
 var id;
 
-getJson(def);
+getJson(ldd);
 
 // user actions
 $('button').on('click',function(event) {
-    // // TODO remove old data
-    // console.log('remove old grid');
+    if (event.target.id == ldd) return;
+    else ldd = event.target.id;
+    
+    // remove old data
     d3.select('svg').remove();
     
-    getJson(event.target.id);
+    getJson(ldd);
 });
 
 function getJson(id) {
