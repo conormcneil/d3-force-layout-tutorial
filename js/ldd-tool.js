@@ -58,11 +58,13 @@ function main() {
         verticalOffset = 50,
         verticalPadding = 5,
         verticalSpacing = ry * 2 + verticalPadding,
-        nodeHighlightFill = 'orange',
         rootNodeFill = 'lightgreen',
         classNodeFill = 'lightblue',
         attributeNodeFill = 'white',
         nodeStroke = 'black',
+        nodeStrokeWidth = '1px',
+        nodeHighlightStroke = 'orange',
+        nodeHighlightStrokeWidth = '5px',
         activeNodes = [],
         
         nodeGen = [],
@@ -378,7 +380,8 @@ function main() {
         } else {
             nodeGen = g1.concat(g2);
             activeNode = node;
-            activeNodes = activeNodes.concat(g1)
+            activeNodes = activeNodes
+                .concat(g1)
                 .concat(g2)
                 .concat(g3);
         }
@@ -392,7 +395,16 @@ function main() {
             });
 
         svg.selectAll('.circle')
-            .style('fill', highlightNode);
+            .style('stroke', function(d) {
+                let _lid = d['local_identifier'][0];
+            
+                return activeNodes.indexOf(_lid) != -1 ? nodeHighlightStroke : nodeStroke;
+            })
+            .style('stroke-width', function(d) {
+                let _lid = d['local_identifier'][0];
+                
+                return activeNodes.indexOf(_lid) != -1 ? nodeHighlightStrokeWidth : nodeStrokeWidth;
+            })
     };
 
     function highlightLine(_link) {
@@ -412,8 +424,7 @@ function main() {
             _lid = n['identifier_reference'][0];
         }
 
-        if (activeNodes.indexOf(_lid) != -1) _color = nodeHighlightFill;
-        else if (n.rootNode) _color = rootNodeFill;
+        if (n.rootNode) _color = rootNodeFill;
         else if (n.className == 'class') _color = classNodeFill;
         else _color = attributeNodeFill;
 
