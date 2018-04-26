@@ -47,10 +47,10 @@ function main() {
         _col = 1, // root elements exist in this column
 
         // Edges (Lines)
-        lineHighlightFill = 'orange',
-        lineHighlightWidth = 5,
-        lineStroke = 'black',
-        lineStrokeWidth = 1,
+        linkHighlightFill = 'orange',
+        linkHighlightStrokeWidth = '3px',
+        linkStroke = 'black',
+        linkStrokeWidth = '1px',
 
         // Nodes
         rx = 100, // x radius of ellipse
@@ -302,10 +302,8 @@ function main() {
             .data(dataNodes);
 
         var linkEnter = link
-            .enter().append('line')
-            .attr('class', 'link')
-            .style('stroke-width', lineStrokeWidth)
-            .style('stroke', lineStroke);
+            .enter().append('path')
+            .attr('class', 'link');
 
         var nodeEnter = node
             .enter().append('g')
@@ -354,18 +352,17 @@ function main() {
 
         // configure behavior when links enter
         linkEnter
-            .attr('x1', function(d) {
-                return getNodeByIdx(d.source).x;
-            })
-            .attr('y1', function(d) {
-                return getNodeByIdx(d.source).y;
-            })
-            .attr('x2', function(d) {
-                return getNodeByIdx(d.target).x;
-            })
-            .attr('y2', function(d) {
-                return getNodeByIdx(d.target).y;
-            });
+            .attr('d', d3.linkHorizontal()
+                .x(function(d) {
+                    return getNodeByIdx(d).x;
+                })
+                .y(function(d) {
+                    return getNodeByIdx(d).y;
+                })
+            )
+            .attr('fill','none')
+            .attr('stroke',linkStroke)
+            .attr('stroke-width',linkStrokeWidth);
     };
 
     function toggleNodes(node) {
@@ -387,7 +384,12 @@ function main() {
         }
 
         svg.selectAll('.link')
-            .style('stroke', highlightLine);
+            .style('stroke', highlightLine)
+            .style('stroke-width',function(d) {
+                let _lid = getNodeByIdx(d.source)['local_identifier'][0];
+                
+                return nodeGen.indexOf(_lid) != -1 ? linkHighlightStrokeWidth : linkStrokeWidth;
+            });
 
         svg.selectAll('.circle')
             .style('fill', highlightNode);
@@ -396,8 +398,8 @@ function main() {
     function highlightLine(_link) {
         let _lid = getNodeByIdx(_link.source)['local_identifier'][0];
 
-        if (nodeGen.indexOf(_lid) != -1) return lineHighlightFill;
-        else return lineStroke;
+        if (nodeGen.indexOf(_lid) != -1) return linkHighlightFill;
+        else return linkStroke;
     };
 
     function highlightNode(n) {
