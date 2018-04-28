@@ -68,14 +68,14 @@ function main() {
         activeNodes = [],
         
         nodeGen = [],
-        id = null,
         nodes = null,
         links = null,
         rootNodes = [],
         dataNodes = [],
         dataLinks = [],
         lidType = null,
-        // def = 'particle',
+        tree = d3.tree()
+            .size([height, width]),
         svg = d3.select('body')
             .append('svg')
             .attr('width', width)
@@ -115,50 +115,54 @@ function main() {
             if (!e.children) e.children = [];
             let targets = e['DD_Association'];
 
-            if (targets && targets.length) targets.map(target => {
-                
-                let targetLid;
-                lidType = 'local_identifier';
-                
-                try {
-                    targetLid = target[lidType][0];
-                } catch (e) {
-                    lidType = 'identifier_reference';
-                    targetLid = target[lidType][0];
-                }
-                
-                // invalid 
-                if (targetLid == 'XSChoice#') return;
-
-                // search for lid in dataNodes array
-                let match = dataNodes.find(el => {
-                    let _output;
+            if (targets && targets.length) {
+                targets.map(target => {
+                    
+                    let targetLid;
+                    lidType = 'local_identifier';
+                    
                     try {
-                        _output = el['local_identifier'][0] === targetLid;
+                        targetLid = target[lidType][0];
                     } catch (e) {
-                        _output = el['identifier_reference'][0] === targetLid;
+                        lidType = 'identifier_reference';
+                        targetLid = target[lidType][0];
                     }
-                    return _output;
-                });
-                
-                if (!match) {
-                    // create new node
-                        // in pds namespace
-                    target.className = 'attribute';
-                    try {
-                        target.name = [target['local_identifier'][0].replace('pds.','')];
-                    } catch (err) {
-                        target.name = [target['identifier_reference'][0].replace('pds.','')];
+                    
+                    // invalid 
+                    if (targetLid == 'XSChoice#') return;
+
+                    // search for lid in dataNodes array
+                    let match = dataNodes.find(el => {
+                        let _output;
+                        try {
+                            _output = el['local_identifier'][0] === targetLid;
+                        } catch (e) {
+                            _output = el['identifier_reference'][0] === targetLid;
+                        }
+                        return _output;
+                    });
+                    
+                    if (!match) {
+                        // create new node
+                            // in pds namespace
+                        target.className = 'attribute';
+                        try {
+                            target.name = [target['local_identifier'][0].replace('pds.','')];
+                        } catch (err) {
+                            target.name = [target['identifier_reference'][0].replace('pds.','')];
+                        }
+                        dataNodes.push(target);
+                        // then create a link in dataLinks array
+                        let _targetIdx = dataNodes.length - 1;
+                        dataLinks.push({ source: idx, target: _targetIdx });
+                    } else {
+                        dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
                     }
-                    dataNodes.push(target);
-                    // then create a link in dataLinks array
-                    let _targetIdx = dataNodes.length - 1;
-                    dataLinks.push({ source: idx, target: _targetIdx });
-                } else {
-                    dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
-                }
-                e.children.push(targetLid);
-            });
+                    e.children.push(target);
+                })
+            } else {
+                e.children = [];
+            }
         });
     };
 
@@ -288,15 +292,6 @@ function main() {
         _col = 1;
         activeNode = null;
 
-        var force = d3.forceSimulation()
-            .force('link', d3.forceLink().id(function(d) {
-                try {
-                    return d['local_identifier'][0];
-                } catch (e) {
-                    return d['identifier_reference'][0];
-                }
-            }));
-
         var link = svg.selectAll('.link')
             .data(dataLinks);
 
@@ -370,9 +365,9 @@ function main() {
     function toggleNodes(node) {
         activeNodes = [];
 
-        let g1 = node['local_identifier'];
-        let g2 = node['children'];
-        let g3 = getNextGen(g2);
+        let g1 = [node];
+        let g2 = nextGen(g1);
+        let g3 = nextGen(g2);
 
         if (activeNode == node) {
             activeNode = null;
@@ -388,22 +383,24 @@ function main() {
 
         svg.selectAll('.link')
             .style('stroke', highlightLine)
-            .style('stroke-width',function(d) {
-                let _lid = getNodeByIdx(d.source)['local_identifier'][0];
+            .style('stroke-width',function(link) {
+                let _lid = getNodeByIdx(link.source)['local_identifier'][0];
                 
-                return nodeGen.indexOf(_lid) != -1 ? linkHighlightStrokeWidth : linkStrokeWidth;
+                return activeNodes.find(d => {
+                    return d['local_identifier'][0] == _lid;
+                }) ? linkHighlightStrokeWidth : linkStrokeWidth;
             });
 
         svg.selectAll('.circle')
             .style('stroke', function(d) {
                 let _lid = d['local_identifier'][0];
             
-                return activeNodes.indexOf(_lid) != -1 ? nodeHighlightStroke : nodeStroke;
+                return activeNodes.find(e => { return e['local_identifier'][0] == _lid; }) ? nodeHighlightStroke : nodeStroke;
             })
             .style('stroke-width', function(d) {
                 let _lid = d['local_identifier'][0];
                 
-                return activeNodes.indexOf(_lid) != -1 ? nodeHighlightStrokeWidth : nodeStrokeWidth;
+                return activeNodes.find(e => { return e['local_identifier'][0] == _lid; }) ? nodeHighlightStrokeWidth : nodeStrokeWidth;
             })
     };
 
@@ -431,14 +428,16 @@ function main() {
         return _color;
     };
 
-    function getNextGen(gen) {
+    function nextGen(parent) {
         let _nextGen = [];
 
         dataLinks.map(link => {
-            let _sourceLid = getNodeByIdx(link.source)['local_identifier'][0];
-            let _targetLid = getNodeByIdx(link.target)['local_identifier'][0];
+            let source = getNodeByIdx(link.source);
+            let target = getNodeByIdx(link.target);
 
-            if (gen && gen.indexOf(_sourceLid) != -1 && _nextGen.indexOf(_targetLid) == -1) _nextGen.push(_targetLid);
+            if (parent && parent.indexOf(source) != -1 && _nextGen.indexOf(target) == -1) {
+                _nextGen.push(target);
+            }
         });
 
         return _nextGen;
