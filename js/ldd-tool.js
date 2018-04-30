@@ -123,7 +123,7 @@ function main() {
                     
                     try {
                         targetLid = target[lidType][0];
-                    } catch (e) {
+                    } catch (err) {
                         lidType = 'identifier_reference';
                         targetLid = target[lidType][0];
                     }
@@ -136,7 +136,7 @@ function main() {
                         let _output;
                         try {
                             _output = el['local_identifier'][0] === targetLid;
-                        } catch (e) {
+                        } catch (err) {
                             _output = el['identifier_reference'][0] === targetLid;
                         }
                         return _output;
@@ -195,13 +195,13 @@ function main() {
 
                         try {
                             dnLid = dn.local_identifier[0];
-                        } catch (e) {
+                        } catch (err) {
                             dnLid = dn.identifier_reference[0];
                         }
 
                         try {
                             _childLid = _child.local_identifier[0];
-                        } catch (e) {
+                        } catch (err) {
                             _childLid = _child.identifier_reference[0];
                         }
 
@@ -215,7 +215,7 @@ function main() {
 
                             try {
                                 _lid = dn['local_identifier'][0];
-                            } catch (e) {
+                            } catch (err) {
                                 _lid = dn['identifier_reference'][0];
                             }
 
@@ -311,7 +311,7 @@ function main() {
 
                 try {
                     _id = d['local_identifier'][0].replace('.', '-');
-                } catch (e) {
+                } catch (err) {
                     _id = d['identifier_reference'][0].replace('.', '-');
                 }
 
@@ -385,24 +385,60 @@ function main() {
             .style('stroke', function(link) {
                 let _lid = getNodeByIdx(link.source)['local_identifier'][0];
                 
-                return nodeGen.find(d => { return d['local_identifier'][0] == _lid; }) ? linkHighlightStroke : linkStroke;
+                return nodeGen.find(d => { 
+                    try {
+                        return d['local_identifier'][0] == _lid;
+                    } catch (err) {
+                        return d['identifier_reference'][0] == _lid;
+                    }
+                }) ? linkHighlightStroke : linkStroke;
             })
             .style('stroke-width',function(link) {
                 let _lid = getNodeByIdx(link.source)['local_identifier'][0];
                 
-                return nodeGen.find(d => { return d['local_identifier'][0] == _lid; }) ? linkHighlightStrokeWidth : linkStrokeWidth;
+                return nodeGen.find(d => { 
+                    try {
+                        return d['local_identifier'][0] == _lid;
+                    } catch (err) {
+                        return d['identifier_reference'][0] == _lid;
+                    }
+                }) ? linkHighlightStrokeWidth : linkStrokeWidth;
             });
 
         svg.selectAll('.circle')
             .style('stroke', function(d) {
-                let _lid = d['local_identifier'][0];
+                let _lid;
+                
+                try {
+                    _lid = d['local_identifier'][0];
+                } catch (err) {
+                    _lid = d['identifier_reference'][0];
+                }
             
-                return activeNodes.find(e => { return e['local_identifier'][0] == _lid; }) ? nodeHighlightStroke : nodeStroke;
+                return activeNodes.find(e => { 
+                    try {
+                        return e['local_identifier'][0] == _lid;
+                    } catch (err) {
+                        return e['identifier_reference'][0] == _lid;
+                    }
+                }) ? nodeHighlightStroke : nodeStroke;
             })
             .style('stroke-width', function(d) {
-                let _lid = d['local_identifier'][0];
+                let _lid;
                 
-                return activeNodes.find(e => { return e['local_identifier'][0] == _lid; }) ? nodeHighlightStrokeWidth : nodeStrokeWidth;
+                try {
+                    _lid = d['local_identifier'][0];
+                } catch (err) {
+                    _lid = d['identifier_reference'][0];
+                }
+                
+                return activeNodes.find(e => { 
+                    try {
+                        return e['local_identifier'][0] == _lid;
+                    } catch (err) {
+                        return e['identifier_reference'][0] == _lid;
+                    }
+                }) ? nodeHighlightStrokeWidth : nodeStrokeWidth;
             })
     };
 
@@ -412,7 +448,7 @@ function main() {
 
         try {
             _lid = n['local_identifier'][0];
-        } catch (e) {
+        } catch (err) {
             _lid = n['identifier_reference'][0];
         }
 
@@ -448,7 +484,7 @@ function main() {
             
             try {
                 _o = d['local_identifier'][0] == lid;
-            } catch (e) {
+            } catch (err) {
                 _o = d['identifier_reference'][0] == lid;
             }
             
