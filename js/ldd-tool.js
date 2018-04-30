@@ -503,7 +503,7 @@ function main() {
     };
 };
 
+// // // // PLACEHOLDER for 'dblclick' event handler // // // //
 function doubleClick(e) {
-    console.log('double click!');
-    console.log(e);
-}
+    return null;
+};
