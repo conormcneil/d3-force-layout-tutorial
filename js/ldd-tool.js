@@ -74,6 +74,8 @@ function main() {
         dataNodes = [],
         dataLinks = [],
         lidType = null,
+        zoomScale = [0.1,10],
+        zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
         tree = d3.tree()
             .size([height, width]),
         svg = d3.select('body')
@@ -241,8 +243,8 @@ function main() {
         var sim = d3.select('svg');
 
         var zoom = d3.zoom()
-            .scaleExtent([0.1,10])
-            .translateExtent([[-1.5*width,-2*height], [2.5*width, 2*height]])
+            .scaleExtent(zoomScale)
+            .translateExtent(zoomBounds)
             .on('zoom',zoomed);
 
         var x = d3.scaleLinear()
