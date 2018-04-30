@@ -308,8 +308,7 @@ function main() {
         var nodeEnter = node
             .enter().append('g')
             .classed('node', true)
-            .on('click', toggleNodes)
-            .on('dblclick', doubleClick)
+            .on('click', click)
             .attr('id', function(d) {
                 let _id;
 
@@ -501,9 +500,30 @@ function main() {
             return  _o;
         });
     };
-};
-
-// // // // PLACEHOLDER for 'dblclick' event handler // // // //
-function doubleClick(e) {
-    return null;
+    
+    var DELAY = 500,
+    clicks = 0,
+    timer = null;
+    
+    function click(event) {
+        clicks++;  //count clicks
+        
+        if (clicks === 1) {
+            toggleNodes(event);
+            // first click
+            timer = setTimeout(function() {
+                
+                clicks = 0;             //after action performed, reset counter
+                
+            }, DELAY);
+            
+        } else {
+            // second click
+            
+            clearTimeout(timer);    //prevent single-click action
+            clicks = 0;             //after action performed, reset counter
+            
+            if (!activeNode) toggleNodes(event);
+        }
+    };
 };
