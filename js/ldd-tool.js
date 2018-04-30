@@ -47,8 +47,8 @@ function main() {
         _col = 1, // root elements exist in this column
 
         // Edges (Lines)
-        linkHighlightFill = 'orange',
-        linkHighlightStrokeWidth = '3px',
+        linkHighlightStroke = 'orange',
+        linkHighlightStrokeWidth = '5px',
         linkStroke = 'black',
         linkStrokeWidth = '1px',
 
@@ -382,13 +382,15 @@ function main() {
         }
 
         svg.selectAll('.link')
-            .style('stroke', highlightLine)
+            .style('stroke', function(link) {
+                let _lid = getNodeByIdx(link.source)['local_identifier'][0];
+                
+                return nodeGen.find(d => { return d['local_identifier'][0] == _lid; }) ? linkHighlightStroke : linkStroke;
+            })
             .style('stroke-width',function(link) {
                 let _lid = getNodeByIdx(link.source)['local_identifier'][0];
                 
-                return activeNodes.find(d => {
-                    return d['local_identifier'][0] == _lid;
-                }) ? linkHighlightStrokeWidth : linkStrokeWidth;
+                return nodeGen.find(d => { return d['local_identifier'][0] == _lid; }) ? linkHighlightStrokeWidth : linkStrokeWidth;
             });
 
         svg.selectAll('.circle')
@@ -402,13 +404,6 @@ function main() {
                 
                 return activeNodes.find(e => { return e['local_identifier'][0] == _lid; }) ? nodeHighlightStrokeWidth : nodeStrokeWidth;
             })
-    };
-
-    function highlightLine(_link) {
-        let _lid = getNodeByIdx(_link.source)['local_identifier'][0];
-
-        if (nodeGen.indexOf(_lid) != -1) return linkHighlightFill;
-        else return linkStroke;
     };
 
     function highlightNode(n) {
