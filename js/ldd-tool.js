@@ -334,7 +334,9 @@ function main() {
             .append('text')
             .text(function(d) {
                 return d.name[0];
-            });
+            })
+            .attr('dx','-85px')
+            .attr('dy','.25em');
         nodeEnter
             .attr('transform',function(d, idx) {
                 // configure horiontal (x) position
