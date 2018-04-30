@@ -273,7 +273,8 @@ function main() {
             .attr('class','axis axis--y')
             .call(yAxis);
 
-        sim.call(zoom);
+        sim.call(zoom)
+            .on('dblclick.zoom', null);
 
         function zoomed() {
             gX.call(xAxis.scale(d3.event.transform.rescaleX(x)));
@@ -308,6 +309,7 @@ function main() {
             .enter().append('g')
             .classed('node', true)
             .on('click', toggleNodes)
+            .on('dblclick', doubleClick)
             .attr('id', function(d) {
                 let _id;
 
@@ -500,3 +502,8 @@ function main() {
         });
     };
 };
+
+function doubleClick(e) {
+    console.log('double click!');
+    console.log(e);
+}
