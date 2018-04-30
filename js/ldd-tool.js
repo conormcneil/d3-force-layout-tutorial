@@ -337,8 +337,6 @@ function main() {
             })
             .style('font-size', function(d) {
                 let maths = Math.min(2 * ry, (2 * ry) / this.getComputedTextLength() * 30);
-                console.log(maths);
-                
                 return `${maths}px`;
             })
             .attr('dx','-50px')
