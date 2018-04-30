@@ -336,10 +336,10 @@ function main() {
                 return d.name[0];
             })
             .style('font-size', function(d) {
-                let maths = Math.min(2 * ry, (2 * ry) / this.getComputedTextLength() * 30);
+                let maths = Math.min(2 * ry, (2 * ry) / this.getComputedTextLength() * 40);
                 return `${maths}px`;
             })
-            .attr('dx','-50px')
+            .attr('dx','-75px')
             .attr('dy','.25em');
         nodeEnter
             .attr('transform',function(d, idx) {
