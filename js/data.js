@@ -1,13 +1,20 @@
 function Data(json) {
     let _col = 1;
-    this.original = JSON.parse(json);
+    
+    this.originalJsonString = json;
+    
+    this.original = function() {
+        return JSON.parse(this.originalJsonString);
+    };
 
     this.rootNodes = [];
+    
     this.nodes = [];
+    
     this.links = [];
 
     this.defineNodesAndLinks = function() {
-        let originalJson = this.original;
+        let originalJson = JSON.parse(this.originalJsonString);
 
         let dd_class = originalJson['Ingest_LDD']['DD_Class'];
         let dd_attribute = originalJson['Ingest_LDD']['DD_Attribute'];
@@ -152,8 +159,4 @@ function Data(json) {
 
         if (nextCol.length) this.sortCols(nextCol);
     };
-    
-    this.nodeInfo = function(lid) {
-        console.log(lid);
-    };
-}
+};

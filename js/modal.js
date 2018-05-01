@@ -7,8 +7,6 @@ function newModal(event) {
         lid = event['identifier_reference'][0];
     }
     
-    let element = data.nodeInfo(lid);
-    
     var modal = new Custombox.modal({
         content: {
             effect: 'slide',
