@@ -37,17 +37,20 @@ function newModal(event) {
     
     function newModalChild(node) {
         let childLid = node['local_identifier'][0];
-        let childTitle = `<h3 class="childTitle">${childLid}</h3>`;
+        let childTitle = `<h3 id="childTitle">${childLid}</h3>`;
         
         let keys = ['local_identifier','reference_type','minimum_occurrences','maximum_occurrences'];
         
         let values = '<div class="childKeys">' +
              `<span class="childKey">${keys[0]}: <input type="text" id="${node[keys[0]]}" name="${node[keys[0]]}" value="${node[keys[0]]}"></span>` + 
-             `<span class="childKey">${keys[1]}: <input type="text" id="${node[keys[1]]}" name="${node[keys[1]]}" value="${node[keys[1]]}"></span>` + 
+             `<span class="childKey">${keys[1]}: <select id="${node[keys[1]]}" name="${node[keys[1]]}">
+                <option value="component_of">component_of</option>
+                <option value="attribute_of">attribute_of</option>
+             </select></span>` + 
              `<span class="childKey">${keys[2]}: <input type="text" id="${node[keys[2]]}" name="${node[keys[2]]}" value="${node[keys[2]]}"></span>` + 
              `<span class="childKey">${keys[3]}: <input type="text" id="${node[keys[3]]}" name="${node[keys[3]]}" value="${node[keys[3]]}"></span>` + 
         '</div>';
         
-        return `<div class="modalChild">${childTitle}${values}</div>`;
+        return `<form name="${childLid}-form" class="modalChild">${childTitle}${values}</form>`;
     };
 };
