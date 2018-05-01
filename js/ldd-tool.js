@@ -61,8 +61,8 @@ function getJson(id) {
     });
 };
 
-function update(res) {
-    data = new Data(res);
+function update(json) {
+    data = new Data(json);
     // perform necessary transformations on data:
     // track them within the API
     data.defineNodesAndLinks();
