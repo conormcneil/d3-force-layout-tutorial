@@ -1,5 +1,47 @@
-var ldd = 'particle';
-var id;
+var width = $(document).width() - 10,
+    height = $(document).height() - 10,
+    activeNode = null,
+    data,
+    id,
+    ldd = 'particle',
+
+    // Edges (Lines)
+    linkHighlightStroke = 'orange',
+    linkHighlightStrokeWidth = '5px',
+    linkStroke = 'black',
+    linkStrokeWidth = '1px',
+
+    // Nodes
+    rx = 100, // x radius of ellipse
+    ry = 30, // y radius of ellipse
+    verticalOffset = 50,
+    verticalPadding = 5,
+    verticalSpacing = ry * 2 + verticalPadding,
+    rootNodeFill = 'lightgreen',
+    classNodeFill = 'lightblue',
+    attributeNodeFill = 'white',
+    nodeStroke = 'black',
+    nodeStrokeWidth = '1px',
+    nodeHighlightStroke = 'orange',
+    nodeHighlightStrokeWidth = '5px',
+    
+    activeNodes = [],
+    nodeGen = [],
+    nodes = null,
+    links = null,
+    rootNodes = [],
+    
+    lidType = null,
+    zoomScale = [0.1,10],
+    zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
+    tree = d3.tree()
+        .size([height, width]),
+    svg = d3.select('body')
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g')
+        .attr('class','grid');
 
 getJson(ldd);
 
@@ -15,59 +57,16 @@ function getJson(id) {
 };
 
 function update(res) {
-    var width = $(document).width() - 10,
-        height = $(document).height() - 10,
-        columnCount,
-        activeNode = null,
-        data,
-
-        // Edges (Lines)
-        linkHighlightStroke = 'orange',
-        linkHighlightStrokeWidth = '5px',
-        linkStroke = 'black',
-        linkStrokeWidth = '1px',
-
-        // Nodes
-        rx = 100, // x radius of ellipse
-        ry = 30, // y radius of ellipse
-        verticalOffset = 50,
-        verticalPadding = 5,
-        verticalSpacing = ry * 2 + verticalPadding,
-        rootNodeFill = 'lightgreen',
-        classNodeFill = 'lightblue',
-        attributeNodeFill = 'white',
-        nodeStroke = 'black',
-        nodeStrokeWidth = '1px',
-        nodeHighlightStroke = 'orange',
-        nodeHighlightStrokeWidth = '5px',
-        activeNodes = [],
-        
-        nodeGen = [],
-        nodes = null,
-        links = null,
-        rootNodes = [],
-        // dataNodes = [],
-        // dataLinks = [],
-        lidType = null,
-        zoomScale = [0.1,10],
-        zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
-        tree = d3.tree()
-            .size([height, width]),
-        svg = d3.select('body')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .append('g')
-            .attr('class','grid');
-            
     data = new Data(res);
+    // perform necessary transformations on data:
+    // track them within the API
     data.defineNodesAndLinks();
     console.log(data);
 
-    drawGrid();
-    initForce();
+    initGrid();
+    initTree();
 
-    function drawGrid() {
+    function initGrid() {
         var sim = d3.select('svg');
 
         var zoom = d3.zoom()
@@ -109,20 +108,10 @@ function update(res) {
             gY.call(yAxis.scale(d3.event.transform.rescaleY(y)));
             svg.attr('transform',d3.event.transform);
         };
-
-        // TODO repair and implement this
-        function resetted() {
-            sim.transition()
-                .duration(750)
-                .call(zoom.transform, d3.zoomIdentity);
-        };
     };
 
 
-    function initForce() {
-        _col = 1;
-        activeNode = null;
-
+    function initTree() {
         var link = svg.selectAll('.link')
             .data(data.links);
 

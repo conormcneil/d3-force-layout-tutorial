@@ -7,10 +7,10 @@ function Data(json) {
     this.links = [];
 
     this.defineNodesAndLinks = function() {
-        let raw = this.original;
+        let originalJson = this.original;
 
-        let dd_class = raw['Ingest_LDD']['DD_Class'];
-        let dd_attribute = raw['Ingest_LDD']['DD_Attribute'];
+        let dd_class = originalJson['Ingest_LDD']['DD_Class'];
+        let dd_attribute = originalJson['Ingest_LDD']['DD_Attribute'];
 
         _classes = dd_class.concat(dd_attribute);
 
