@@ -4,6 +4,11 @@ var width = $(document).width() - 10,
     data,
     id,
     ldd = 'particle',
+    
+    // click event variables
+    delay = 500, // double click delay (ms)
+    clicks = 0,
+    timer = null,
 
     // Edges (Lines)
     linkHighlightStroke = 'orange',
@@ -304,10 +309,6 @@ function update(res) {
         return data.nodes[nodeIdx];
     };
     
-    var DELAY = 500,
-    clicks = 0,
-    timer = null;
-    
     function click(event) {
         clicks++;  //count clicks
         
@@ -315,20 +316,14 @@ function update(res) {
             toggleNodes(event);
             // first click
             timer = setTimeout(function() {
-                
-                clicks = 0;             //after action performed, reset counter
-                
-            }, DELAY);
-            
+                    clicks = 0;         // reset counter
+                }, delay);
         } else {
             // second click
-            
-            clearTimeout(timer);    //prevent single-click action
-            clicks = 0;             //after action performed, reset counter
-            
+            clearTimeout(timer);    // prevent single-click action
+            clicks = 0;             // after action performed, reset counter
             if (!activeNode) toggleNodes(event);
-            
-            // toggle d3 and form
+            // TODO toggle d3 and form
             
         }
     };

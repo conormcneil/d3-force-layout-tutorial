@@ -151,5 +151,5 @@ function Data(json) {
         });
 
         if (nextCol.length) this.sortCols(nextCol);
-    }
+    };
 }
