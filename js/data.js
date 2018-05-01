@@ -14,18 +14,18 @@ function Data(json) {
 
         _classes = dd_class.concat(dd_attribute);
 
-        // // // /// // // //  // // // 
+        // // // /// // // //  // // //
+        // set class name for each node
         this.nodes = _classes.map(e => {
             let links = e['DD_Association'];
-
+            
             if (links && links.length) {
                 e.className = 'class';
             } else {
                 e.className = 'attribute';
             }
-
+            
             return e;
-
         });
 
         this.links = [];
@@ -91,8 +91,8 @@ function Data(json) {
             }
         });
 
-
         // // // // // // // // // // //
+        // identify and define root nodes
         this.nodes.map((node, idx) => {
             let _match = this.links.find(link => link.target == idx);
             if (!_match) {
