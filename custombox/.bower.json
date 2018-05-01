@@ -1,0 +1,52 @@
+{
+  "name": "custombox",
+  "description": "Modal dialog effects with transitions CSS3",
+  "version": "4.0.3",
+  "author": {
+    "name": "Julio de la Calle",
+    "email": "juliodlcp@gmail.com",
+    "url": "https://www.linkedin.com/in/juliodelacalle"
+  },
+  "homepage": "https://dixso.github.io/custombox/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "LICENSE.txt",
+    "README.md",
+    "Gruntfile.js",
+    "component.json",
+    "package.json"
+  ],
+  "keywords": [
+    "animations",
+    "css3",
+    "dialog",
+    "flexbox",
+    "lightbox",
+    "modal",
+    "popup",
+    "responsive",
+    "window"
+  ],
+  "license": "MIT",
+  "main": [
+    "dist/custombox.min.css",
+    "dist/custombox.min.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://dixso@github.com/dixso/custombox.git"
+  },
+  "_release": "4.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "4.0.3",
+    "commit": "b5f1cfdd17c991dcbd5c8c04fe083f5488b147f8"
+  },
+  "_source": "https://github.com/dixso/custombox.git",
+  "_target": "^4.0.3",
+  "_originalSource": "custombox",
+  "_direct": true
+}

@@ -324,7 +324,7 @@ function update(res) {
             clicks = 0;             // after action performed, reset counter
             if (!activeNode) toggleNodes(event);
             // TODO toggle d3 and form
-            
+            newModal(event);
         }
     };
 };
