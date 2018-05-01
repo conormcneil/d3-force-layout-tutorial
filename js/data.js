@@ -46,13 +46,11 @@ function Data(json) {
                 targets.map(target => {
 
                     let targetLid;
-                    lidType = 'local_identifier';
 
                     try {
-                        targetLid = target[lidType][0];
+                        targetLid = target['local_identifier'][0];
                     } catch (err) {
-                        lidType = 'identifier_reference';
-                        targetLid = target[lidType][0];
+                        targetLid = target['identifier_reference'][0];
                     }
 
                     // invalid 
