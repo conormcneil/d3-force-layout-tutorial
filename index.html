@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     <link rel="stylesheet" href="custombox/dist/custombox.min.css">
-    
+
     <script src="custombox/dist/custombox.min.js" charset="utf-8"></script>
     <script src="custombox/dist/custombox.legacy.min.js" charset="utf-8"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
@@ -15,7 +15,7 @@
     <script src="js/ldd-tool.js" charset="utf-8" async defer></script>
     <script src="js/data.js" charset="utf-8" async defer></script>
     <script src="js/modal.js" charset="utf-8" async defer></script>
-    
+
     <title>Dictionary Tool</title>
 </head>
 
@@ -51,6 +51,7 @@ svg {
 #modal {
     padding: 1em;
     display: none;
+    position: relative;
     background: white;
     width: 40vw;
     display: flex;
@@ -58,6 +59,12 @@ svg {
     overflow: scroll;
     box-shadow: 0 0 1em 0 black;
     border-radius: 0.25em;
+}
+.modal-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    cursor: pointer;
 }
 #modalTitle {
     text-align: center;
@@ -81,12 +88,10 @@ svg {
 }
 </style>
 
-
 <body>
 
     <div id="modal">
         <h2 id="modalTitle"></h2>
-        
         <div id="modalBody"></div>
     </div>
 

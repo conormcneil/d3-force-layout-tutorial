@@ -1,3 +1,5 @@
+var modal = null;
+
 function newModal(event) {
     let lid;
     
@@ -7,15 +9,18 @@ function newModal(event) {
         lid = event['identifier_reference'][0];
     }
     
-    var modal = new Custombox.modal({
+    modal = new Custombox.modal({
         content: {
             effect: 'slide',
+            id: 'modalbox',
             target: '#modal',
             onOpen: function() {
                 // refresh modal
                 clearModal();
                 
                 let children = event['DD_Association'];
+                
+                $('#modal').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
                 
                 $('#modalTitle').text(event['local_identifier'][0]);
                 $('#modalBody').append(`<h3>Child Nodes (${children.length}):</h3>`)
@@ -63,4 +68,8 @@ function newModal(event) {
 
         return `<form name="${childLid}-form" class="modalChild">${childTitle}${values}</form>`;
     };
+};
+
+function closeModal() {
+    Custombox.modal.close();
 };
