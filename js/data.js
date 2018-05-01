@@ -152,4 +152,8 @@ function Data(json) {
 
         if (nextCol.length) this.sortCols(nextCol);
     };
+    
+    this.nodeInfo = function(lid) {
+        console.log(lid);
+    };
 }

@@ -14,6 +14,7 @@
     <script src="https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
     <script src="js/ldd-tool.js" charset="utf-8" async defer></script>
     <script src="js/data.js" charset="utf-8" async defer></script>
+    <script src="js/modal.js" charset="utf-8" async defer></script>
     
     <title>Dictionary Tool</title>
 </head>
@@ -54,6 +55,19 @@ svg {
     width: 60vw;
     display: flex;
     justify-content: center;
+    overflow: scroll;
+}
+.modalChild {
+    margin-top: 0.5em;
+    padding-left: 0.5em;
+    border: 1px solid black;
+}
+.childKeys {
+    display: flex;
+    flex-direction: column;
+}
+.childKey {
+    margin-left: 1em;
 }
 </style>
 
@@ -62,29 +76,9 @@ svg {
 
     <div id="modal">
         <h2 id="modalTitle"></h2>
+        
+        <div id="modalBody"></div>
     </div>
-    
 
-    <script>
-    // Instantiate new modal
-    
-    function newModal(event) {
-        console.log(data)
-        console.log(event);
-        
-        var modal = new Custombox.modal({
-            content: {
-                effect: 'slide',
-                target: '#modal',
-                onOpen: function() {
-                    console.log('opening modal')
-                    $('#modalTitle').text('Selected Node: ' + event['local_identifier'][0]);
-                }
-            }
-        });
-        
-        modal.open();
-    };
-    </script>
 </body>
 </html>
