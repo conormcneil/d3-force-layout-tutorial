@@ -3,17 +3,6 @@ var id;
 
 getJson(ldd);
 
-// user actions
-$('button').on('click',function(event) {
-    if (event.target.id == ldd) return;
-    else ldd = event.target.id;
-    
-    // remove old data
-    d3.select('svg').remove();
-    
-    getJson(ldd);
-});
-
 function getJson(id) {
     $.ajax({
         type: "POST",
@@ -21,30 +10,16 @@ function getJson(id) {
         data: {
             id: id
         },
-        success: setNodeTypes
+        success: update
     });
 };
 
-function setNodeTypes(_json) {
-    _json = JSON.parse(_json);
-    
-    let dd_class = _json['Ingest_LDD']['DD_Class'];
-    let dd_attribute = _json['Ingest_LDD']['DD_Attribute'];
-    
-    _classes = dd_class.concat(dd_attribute);
-
-    // append ldd name to top of d3 container for reference
-    $('#ldd-name').text(event.target.id);
-
-    main();
-};
-
-function main() {
+function update(res) {
     var width = $(document).width() - 10,
         height = $(document).height() - 10,
         columnCount,
         activeNode = null,
-        _col = 1, // root elements exist in this column
+        data,
 
         // Edges (Lines)
         linkHighlightStroke = 'orange',
@@ -71,8 +46,8 @@ function main() {
         nodes = null,
         links = null,
         rootNodes = [],
-        dataNodes = [],
-        dataLinks = [],
+        // dataNodes = [],
+        // dataLinks = [],
         lidType = null,
         zoomScale = [0.1,10],
         zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
@@ -84,160 +59,13 @@ function main() {
             .attr('height', height)
             .append('g')
             .attr('class','grid');
-
-    drawD3();
-
-    function drawD3() {
-        initNodesAndLinks();
-        setRootNodes();
-        sortCols(rootNodes);
-        drawGrid();
-        initForce();
-    };
-
-    function initNodesAndLinks() {
-        
-        dataNodes = _classes.map(e => {
-            let links = e['DD_Association'];
             
-            if (links && links.length) {
-                e.className = 'class';
-            } else {
-                e.className = 'attribute';
-            }
-            
-            return e;
-            
-        });
+    data = new Data(res);
+    data.defineNodesAndLinks();
+    console.log(data);
 
-        dataLinks = [];
-
-        dataNodes.map((e,idx) => {
-            
-            if (!e.children) e.children = [];
-            let targets = e['DD_Association'];
-
-            if (targets && targets.length) {
-                targets.map(target => {
-                    
-                    let targetLid;
-                    lidType = 'local_identifier';
-                    
-                    try {
-                        targetLid = target[lidType][0];
-                    } catch (err) {
-                        lidType = 'identifier_reference';
-                        targetLid = target[lidType][0];
-                    }
-                    
-                    // invalid 
-                    if (targetLid == 'XSChoice#') return;
-
-                    // search for lid in dataNodes array
-                    let match = dataNodes.find(el => {
-                        let _output;
-                        try {
-                            _output = el['local_identifier'][0] === targetLid;
-                        } catch (err) {
-                            _output = el['identifier_reference'][0] === targetLid;
-                        }
-                        return _output;
-                    });
-                    
-                    if (!match) {
-                        // create new node
-                            // in pds namespace
-                        target.className = 'attribute';
-                        try {
-                            target.name = [target['local_identifier'][0].replace('pds.','')];
-                        } catch (err) {
-                            target.name = [target['identifier_reference'][0].replace('pds.','')];
-                        }
-                        dataNodes.push(target);
-                        // then create a link in dataLinks array
-                        let _targetIdx = dataNodes.length - 1;
-                        dataLinks.push({ source: idx, target: _targetIdx });
-                    } else {
-                        dataLinks.push({ source: idx, target: dataNodes.indexOf(match) });
-                    }
-                    e.children.push(target);
-                })
-            } else {
-                e.children = [];
-            }
-        });
-    };
-
-    function setRootNodes() {
-        dataNodes.map((node,idx) => {
-            let _match = dataLinks.find(link => link.target == idx);
-            if (!_match) {
-                node.rootNode = true;
-                rootNodes.push(node);
-            };
-        });
-    };
-
-    // set col attribute on each node for use later during positioning
-    // recursive function, begin with root nodes
-    function sortCols(_nodes) {
-        let nextCol = [];
-        _col++;
-
-        // for each root element, find its child elements
-        _nodes.map(root => {
-            let _children = root['DD_Association'];
-
-            if (_children && _children.length) {
-                // check that each child exists as an element in dataNodes
-                _children.map(_child => {
-                    dataNodes.find(dn => {
-                        let dnLid,
-                            _childLid;
-
-                        try {
-                            dnLid = dn.local_identifier[0];
-                        } catch (err) {
-                            dnLid = dn.identifier_reference[0];
-                        }
-
-                        try {
-                            _childLid = _child.local_identifier[0];
-                        } catch (err) {
-                            _childLid = _child.identifier_reference[0];
-                        }
-
-                        let _match = dnLid == _childLid;
-
-                        // if it exists, set its class
-                        // then pass it into array for storage
-                        // to be passed into recursive function upon completion of find() method
-                        if (_match) {
-                            let _lid;
-
-                            try {
-                                _lid = dn['local_identifier'][0];
-                            } catch (err) {
-                                _lid = dn['identifier_reference'][0];
-                            }
-
-                            let _localNode = getNodeByLid(_lid);
-                            _localNode.col = _col;
-
-                            // push node object to array of nodes in this column
-                            // perform the same sequence of steps for each node
-                            // in the new array
-                            nextCol.push(dn);
-                        }
-
-                        return _match;
-                    })
-                });
-            }
-        });
-
-        if (nextCol.length) sortCols(nextCol);
-    };
+    drawGrid();
+    initForce();
 
     function drawGrid() {
         var sim = d3.select('svg');
@@ -296,10 +124,10 @@ function main() {
         activeNode = null;
 
         var link = svg.selectAll('.link')
-            .data(dataLinks);
+            .data(data.links);
 
         var node = svg.selectAll('g')
-            .data(dataNodes);
+            .data(data.nodes);
 
         var linkEnter = link
             .enter().append('path')
@@ -471,7 +299,7 @@ function main() {
     function nextGen(parent) {
         let _nextGen = [];
 
-        dataLinks.map(link => {
+        data.links.map(link => {
             let source = getNodeByIdx(link.source);
             let target = getNodeByIdx(link.target);
 
@@ -479,26 +307,12 @@ function main() {
                 _nextGen.push(target);
             }
         });
-
+        
         return _nextGen;
     };
 
     function getNodeByIdx(nodeIdx) {
-        return dataNodes[nodeIdx];
-    };
-
-    function getNodeByLid(lid) {
-        return dataNodes.find(d => {
-            let _o;
-            
-            try {
-                _o = d['local_identifier'][0] == lid;
-            } catch (err) {
-                _o = d['identifier_reference'][0] == lid;
-            }
-            
-            return  _o;
-        });
+        return data.nodes[nodeIdx];
     };
     
     var DELAY = 500,
@@ -524,6 +338,9 @@ function main() {
             clicks = 0;             //after action performed, reset counter
             
             if (!activeNode) toggleNodes(event);
+            
+            // toggle d3 and form
+            
         }
     };
 };
