@@ -14,32 +14,49 @@ function newModal(event) {
             effect: 'slide',
             id: 'modalbox',
             target: '#modal',
-            onOpen: function() {
-                // refresh modal
-                clearModal();
-                
-                let children = event['DD_Association'];
-                
-                $('#modal').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
-                
-                $('#modalTitle').text(event['local_identifier'][0]);
-                $('#modalBody').append(`<h3>Child Nodes (${children.length}):</h3>`)
-                
-                children.map(a => {
-                    $('#modalBody').append(newModalChild(a));
-                })
-            }
+            onOpen: newModal
         }
     });
     
     modal.open();
+    
+    function newModal() {
+        // refresh modal
+        clearModal();
+        
+        let children = event['DD_Association'];
+        
+        $('#modal').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
+        
+        $('#modalTitle').text(event['local_identifier'][0]);
+        $('#modalBody').append(`<h3>Child Nodes (${children.length}):</h3>`)
+        
+        children.map(a => {
+            $('#modalBody').append(newModalChild(a));
+        });
+        
+        // add event listeners to trash icons now that they exist in DOM
+        $('.fa-trash-alt').on('click',function(event) {
+            let target = event.target;
+            let _confirm = confirm('Are you sure you want to delete this node?');
+
+            if (_confirm) {
+                let deleteLid = $(target).parent().attr('class').split(' ')[1].trim().replace('-','.');
+                data.deleteNode(deleteLid);
+            } else {
+                return;
+            }
+        });
+    };
     
     function clearModal() {
         $('#modalBody').empty();
     };
     
     function newModalChild(node) {
-        let childLid;
+        console.log(node);
+        let childLid,
+            htmlChildLid;
         let keys = ['reference_type','minimum_occurrences','maximum_occurrences'];
 
         try {
@@ -49,6 +66,8 @@ function newModal(event) {
             childLid = node['identifier_reference'][0];
             keys.unshift('identifier_reference');
         }
+        
+        htmlChildLid = childLid.replace('.','-');
 
         let childTitle = `<h3 id="childTitle">${childLid}</h3>`;
 
@@ -65,8 +84,10 @@ function newModal(event) {
              `<span class="childKey">${keys[2]}: <input type="text" id="${minOcc}" name="${minOcc}" value="${minOcc}"></span>` + 
              `<span class="childKey">${keys[3]}: <input type="text" id="${maxOcc}" name="${maxOcc}" value="${maxOcc}"></span>` + 
         '</div>';
+        
+        let childButtons = `<div class="modal-child-buttons ${htmlChildLid}"><i class="fas fa-lg fa-trash-alt"></i></div>`;
 
-        return `<form name="${childLid}-form" class="modalChild">${childTitle}${values}</form>`;
+        return `<form name="${childLid}-form" class="modalChild">${childTitle}${values}${childButtons}</form>`;
     };
 };
 

@@ -35,8 +35,6 @@ function Data(json) {
             return e;
         });
 
-        this.links = [];
-
         this.nodes.map((e, idx) => {
 
             if (!e.children) e.children = [];
@@ -91,8 +89,7 @@ function Data(json) {
                     }
                     e.children.push(target);
                 })
-            } else {
-                e.children = [];
+                
             }
         });
 
@@ -157,4 +154,90 @@ function Data(json) {
 
         if (nextCol.length) this.sortCols(nextCol);
     };
+    
+    this.deleteNode = function(lid) {
+        let that = this;
+        let node = this.getNode(lid);
+        
+        console.log(`delete: ${lid}`);
+        let parents = this.parents(lid,true);
+        console.log(parents);
+        // delete node association from each parent
+        parents.map((p,idx) => {
+            let parentMap = {};
+            let dataParent = data.nodes[p];
+            let dpChildren = dataParent.children;
+            
+            console.log(dataParent);
+            dpChildren.map((dpChild,childIdx) => {
+                let childLid;
+                
+                try {
+                    childLid = dpChild['local_identifier'][0];
+                } catch (err) {
+                    childLid = dpChild['identifier_reference'][0];
+                }
+                
+                parentMap[childLid] = childIdx;
+            });
+            
+            console.log(parentMap);
+            
+            let spliceIdx = parentMap[lid];
+            console.log(spliceIdx);
+            
+            dpChildren.splice(spliceIdx,spliceIdx+1);
+        });
+        
+        console.log(this.nodes);
+        
+        // TODO node has been removed from data.nodes
+            // now update the DOM/D3
+        
+    };
+    
+    this.parents = function(lid,getIdx) {
+        let idx = this.getNode(lid,true);
+        let _parents = [];
+        
+        this.links.map(l => {
+            if (l.target == idx) _parents.push(l.source);
+        });
+        
+        if (getIdx) {
+            return _parents;
+        } else {
+            _parents = _parents.map(p => {
+                return data.nodes[p];
+            });
+            
+            return _parents;
+        }
+        
+    };
+    
+    this.getNode = function(lid,getIdx) {
+        let nodeIdx;
+        let node;
+        
+        this.nodes.map((d,idx) => {
+            let dLid;
+            
+            try {
+                dLid = d['local_identifier'][0];
+            } catch (err) {
+                dLid = d['identifier_reference'][0];
+            }
+            
+            if (lid == dLid) {
+                nodeIdx = idx;
+                node = d;
+            }
+        });
+        
+        if (getIdx) return nodeIdx;
+        else return node;
+    };
+    
+    // this.nodeByLid
 };
