@@ -71,10 +71,6 @@ function initTree(data) {
             .append('g')
             .attr('class','grid');
     
-    // perform necessary transformations on data:
-    // track them within the API
-    data.defineNodesAndLinks();
-
     initGrid();
     update();
 

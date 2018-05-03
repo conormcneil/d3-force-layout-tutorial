@@ -20,6 +20,7 @@ function Data(json) {
     this.links = [];
 
     this.defineNodesAndLinks = function() {
+        console.log('execute');
         let originalJson = JSON.parse(this.originalJsonString);
 
         let dd_class = originalJson['Ingest_LDD']['DD_Class'];
@@ -211,7 +212,7 @@ function Data(json) {
         // TODO node has been removed from data.model
             // now update the DOM/D3
         console.log('update the DOM/D3');
-        initTree(this.modelJson());
+        main(this.modelJson());
     };
     
     this.parents = function(lid,getIdx) {
@@ -258,4 +259,5 @@ function Data(json) {
     };
     
     // this.nodeByLid
+    this.defineNodesAndLinks();
 };
