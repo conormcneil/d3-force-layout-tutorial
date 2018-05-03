@@ -1,52 +1,6 @@
-var width = $(document).width() - 10,
-    height = $(document).height() - 10,
-    activeNode = null,
+var id,
     data,
-    id,
-    ldd = 'particle',
-    
-    // click event variables
-    delay = 500, // double click delay (ms)
-    clicks = 0,
-    timer = null,
-
-    // Edges (Lines)
-    linkHighlightStroke = 'orange',
-    linkHighlightStrokeWidth = '5px',
-    linkStroke = 'black',
-    linkStrokeWidth = '1px',
-
-    // Nodes
-    rx = 100, // x radius of ellipse
-    ry = 30, // y radius of ellipse
-    verticalOffset = 50,
-    verticalPadding = 5,
-    verticalSpacing = ry * 2 + verticalPadding,
-    rootNodeFill = 'lightgreen',
-    classNodeFill = 'lightblue',
-    attributeNodeFill = 'white',
-    nodeStroke = 'black',
-    nodeStrokeWidth = '1px',
-    nodeHighlightStroke = 'orange',
-    nodeHighlightStrokeWidth = '5px',
-    
-    activeNodes = [],
-    nodeGen = [],
-    nodes = null,
-    links = null,
-    rootNodes = [],
-    
-    lidType = null,
-    zoomScale = [0.1,10],
-    zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
-    tree = d3.tree()
-        .size([height, width]),
-    svg = d3.select('body')
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .append('g')
-        .attr('class','grid');
+    ldd = 'particle';
 
 getJson(ldd);
 
@@ -57,19 +11,72 @@ function getJson(id) {
         data: {
             id: id
         },
-        success: update
+        success: main
     });
 };
 
-function update(json) {
+function main(json) {
     data = new Data(json);
+    initTree(data);
+};
+
+function initTree(data) {
+    console.log(data);
+    d3.select('svg').remove();
+    
+    var width = $(document).width() - 10,
+        height = $(document).height() - 10,
+        activeNode = null,
+        
+        // click event variables
+        delay = 500, // double click delay (ms)
+        clicks = 0,
+        timer = null,
+
+        // Edges (Lines)
+        linkHighlightStroke = 'orange',
+        linkHighlightStrokeWidth = '5px',
+        linkStroke = 'black',
+        linkStrokeWidth = '1px',
+
+        // Nodes
+        rx = 100, // x radius of ellipse
+        ry = 30, // y radius of ellipse
+        verticalOffset = 50,
+        verticalPadding = 5,
+        verticalSpacing = ry * 2 + verticalPadding,
+        rootNodeFill = 'lightgreen',
+        classNodeFill = 'lightblue',
+        attributeNodeFill = 'white',
+        nodeStroke = 'black',
+        nodeStrokeWidth = '1px',
+        nodeHighlightStroke = 'orange',
+        nodeHighlightStrokeWidth = '5px',
+        
+        activeNodes = [],
+        nodeGen = [],
+        nodes = null,
+        links = null,
+        rootNodes = [],
+        
+        lidType = null,
+        zoomScale = [0.1,10],
+        zoomBounds = [[ -20 * width, -10 * height], [ 10 * width, 40 * height]], // [[-x,y],[x,-y]]
+        tree = d3.tree()
+            .size([height, width]),
+        svg = d3.select('body')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .append('g')
+            .attr('class','grid');
+    
     // perform necessary transformations on data:
     // track them within the API
     data.defineNodesAndLinks();
-    console.log(data);
 
     initGrid();
-    initTree();
+    update();
 
     function initGrid() {
         var sim = d3.select('svg');
@@ -116,7 +123,7 @@ function update(json) {
     };
 
 
-    function initTree() {
+    function update() {
         var link = svg.selectAll('.link')
             .data(data.links);
 

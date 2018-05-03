@@ -43,6 +43,7 @@ function newModal(event) {
             if (_confirm) {
                 let deleteLid = $(target).parent().attr('class').split(' ')[1].trim().replace('-','.');
                 data.deleteNode(deleteLid);
+                closeModal();
             } else {
                 return;
             }
@@ -54,7 +55,6 @@ function newModal(event) {
     };
     
     function newModalChild(node) {
-        console.log(node);
         let childLid,
             htmlChildLid;
         let keys = ['reference_type','minimum_occurrences','maximum_occurrences'];

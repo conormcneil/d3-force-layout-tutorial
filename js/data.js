@@ -6,6 +6,12 @@ function Data(json) {
     this.original = function() {
         return JSON.parse(this.originalJsonString);
     };
+    
+    this.model = JSON.parse(json);
+    
+    this.modelJson = function() {
+        return JSON.stringify(this.model);
+    };
 
     this.rootNodes = [];
     
@@ -158,42 +164,54 @@ function Data(json) {
     this.deleteNode = function(lid) {
         let that = this;
         let node = this.getNode(lid);
+        let nodeType = node.className;
+        let deleteIdx;
+        let parentClass = nodeType == 'attribute' ? 'DD_Attribute' : 'DD_Class';
         
-        console.log(`delete: ${lid}`);
-        let parents = this.parents(lid,true);
-        console.log(parents);
-        // delete node association from each parent
-        parents.map((p,idx) => {
-            let parentMap = {};
-            let dataParent = data.nodes[p];
-            let dpChildren = dataParent.children;
+        // remove node from corresponding parentClass array
+        let array = data.model['Ingest_LDD'][parentClass];
+        
+        array.map((element,idx) => {
+            let eLid;
             
-            console.log(dataParent);
-            dpChildren.map((dpChild,childIdx) => {
-                let childLid;
-                
-                try {
-                    childLid = dpChild['local_identifier'][0];
-                } catch (err) {
-                    childLid = dpChild['identifier_reference'][0];
-                }
-                
-                parentMap[childLid] = childIdx;
-            });
+            try {
+                eLid = element['local_identifier'][0];
+            } catch (err) {
+                eLid = element['identifier_reference'][0];
+            }
             
-            console.log(parentMap);
-            
-            let spliceIdx = parentMap[lid];
-            console.log(spliceIdx);
-            
-            dpChildren.splice(spliceIdx,spliceIdx+1);
+            if (eLid == lid) deleteIdx = idx;
         });
         
-        console.log(this.nodes);
+        array.splice(deleteIdx,1);
         
-        // TODO node has been removed from data.nodes
+        // remove any references to node from remaining elements in 'DD_Class'
+        let ddClass = data.model['Ingest_LDD']['DD_Class'];
+        
+        ddClass.map(c => {
+            let className = c['local_identifier'][0];
+            let associations = c['DD_Association'];
+            let associationIdx;
+            
+            associations.map((a,aIdx) => {
+                let aLid;
+                
+                try {
+                    aLid = a['local_identifier'][0];
+                } catch (err) {
+                    aLid = a['identifier_reference'][0];
+                }
+                
+                if (aLid == lid) associationIdx = aIdx;
+            });
+            
+            associations.splice(associationIdx,1);
+        });
+        
+        // TODO node has been removed from data.model
             // now update the DOM/D3
-        
+        console.log('update the DOM/D3');
+        initTree(this.modelJson());
     };
     
     this.parents = function(lid,getIdx) {
