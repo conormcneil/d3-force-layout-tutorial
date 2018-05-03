@@ -123,6 +123,7 @@ function initTree(data) {
         var link = svg.selectAll('.link')
             .data(data.links);
 
+        console.log(data.nodes);
         var node = svg.selectAll('g')
             .data(data.nodes);
 
