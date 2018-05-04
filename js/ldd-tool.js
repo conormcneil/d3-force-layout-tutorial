@@ -72,8 +72,6 @@ function main(json) {
 };
 
 function update() {
-    console.log('nodes',data.nodes);
-    console.log('links',data.links);
     var tIn = d3.transition()
         .duration(1000);
 
@@ -81,10 +79,23 @@ function update() {
         .duration(1000);
 
     var link = svg.selectAll('.link')
-        .data(data.links);
+        .data(data.links, function(l) {
+            let lidId = `${l.source}.${l.target}`
+            return lidId;
+        });
 
     var node = svg.selectAll('g')
-        .data(data.nodes);
+        .data(data.nodes,function(d) {
+            let lidId;
+            
+            try {
+                lidId = d['local_identifier'][0];
+            } catch (err) {
+                lidId = d['identifier_reference'][0];
+            }
+            
+            return lidId;
+        });
 
     var linkEnter = link
         .enter().append('path')

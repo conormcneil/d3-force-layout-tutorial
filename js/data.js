@@ -14,21 +14,19 @@ function Data(json) {
     };
 
     this.rootNodes = [];
-    
-    this.nodes = [];
-    
-    this.links = [];
 
     this.defineNodesAndLinks = function() {
-        console.log('execute');
+        
+        this.nodes = [];
+        
+        this.links = [];
+        
         let model = this.model;
 
         let dd_class = model['Ingest_LDD']['DD_Class'];
         let dd_attribute = model['Ingest_LDD']['DD_Attribute'];
-        // console.log(dd_class);
-        // console.log(dd_attribute);
 
-        _classes = dd_class.concat(dd_attribute);
+        let _classes = dd_class.concat(dd_attribute);
 
         // // // /// // // //  // // //
         // set class name for each node
@@ -45,7 +43,6 @@ function Data(json) {
         });
 
         this.nodes.map((e, idx) => {
-            if (e.name[0] == "Axis_Values") console.log(e);
 
             e.children = [];
             let targets = e['DD_Association'];
@@ -76,7 +73,6 @@ function Data(json) {
                     });
 
                     if (!match) {
-                        // console.log(e,targetLid);
                         // create new node
                         // in pds namespace
                         target.className = 'attribute';
@@ -186,20 +182,16 @@ function Data(json) {
             }
             
             if (eLid == lid) deleteIdx = idx;
-            console.log(deleteIdx);
         });
         array.splice(deleteIdx,1);
-        // console.log(array);
-        // console.log(data.model);
         
         // remove any references to node from remaining elements in 'DD_Class'
         let ddClass = data.model['Ingest_LDD']['DD_Class'];
         
         ddClass.map(c => {
-            if (c.name[0] == 'Axis_Values') console.log(c);
             let className = c['local_identifier'][0];
             let associations = c['DD_Association'];
-            let associationIdx;
+            let associationIdxs = [];
             
             associations.map((a,aIdx) => {
                 let aLid;
@@ -210,17 +202,18 @@ function Data(json) {
                     aLid = a['identifier_reference'][0];
                 }
                 
-                if (aLid == lid) associationIdx = aIdx;
-                console.log(associationIdx);
+                if (aLid == lid) {
+                    associations.splice(aIdx,1);
+                }
             });
             
-            associations.splice(associationIdx,1);
-            if (c.name[0] == 'Axis_Values') console.log(c);
         });
         
         // node has been removed from data.model
-            // now update the DOM/D3
-        main(JSON.stringify(data.model));
+        // update nodes and links
+        this.defineNodesAndLinks();
+        // now update the DOM/D3
+        update();
     };
     
     this.parents = function(lid,getIdx) {
@@ -266,6 +259,5 @@ function Data(json) {
         else return node;
     };
     
-    // this.nodeByLid
     this.defineNodesAndLinks();
 };
