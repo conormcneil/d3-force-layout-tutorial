@@ -59,7 +59,6 @@ function getJson(id) {
 
 function main(json) {
     data = new Data(json);
-    console.log(data);
 
     // remove old tree
     d3.select('.tree').remove();
