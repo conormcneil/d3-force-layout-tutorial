@@ -84,15 +84,22 @@ function Data(json) {
                         this.nodes.push(target);
                         // then create a link in this.links array
                         let _targetIdx = this.nodes.length - 1;
-                        this.links.push({
+                        
+                        let l = {
                             source: idx,
-                            target: _targetIdx
-                        });
+                            target: _targetIdx,
+                            id: `${idx}.${_targetIdx}`
+                        };
+                        console.log(l);
+                        this.links.push(l);
                     } else {
-                        this.links.push({
+                        let l = {
                             source: idx,
-                            target: this.nodes.indexOf(match)
-                        });
+                            target: this.nodes.indexOf(match),
+                            id: `${idx}.${target}`
+                        };
+                        console.log(l);
+                        this.links.push(l);
                     }
                     e.children.push(target);
                 })
@@ -112,6 +119,8 @@ function Data(json) {
         });
         
         this.sortCols(this.rootNodes);
+        console.log(this.nodes);
+        console.log(this.links);
     };
     
     // // // // // // // // // // // sortCols(rootNodes)

@@ -79,8 +79,7 @@ function update() {
 
     var link = svg.selectAll('.link')
         .data(data.links, function(l) {
-            let lidId = `${l.source}.${l.target}`
-            return lidId;
+            return l.id;
         });
 
     var node = svg.selectAll('g')
