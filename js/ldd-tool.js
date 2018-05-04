@@ -181,6 +181,7 @@ function update() {
         .attr('stroke', linkStroke)
         .attr('stroke-width', linkStrokeWidth);
     
+    // // // REMOVE // // //
     var linkExit = link.exit()
         .transition(tOut)
         .style('opacity',1e-6)
