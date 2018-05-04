@@ -5,6 +5,7 @@ var id,
     width = $(document).width() - 10,
     height = $(document).height() - 10,
     activeNode = null,
+    tDuration = 1000, // transition duration (ms)
     // click event variables
     delay = 500, // double click delay (ms)
     clicks = 0,
@@ -71,6 +72,12 @@ function main(json) {
 };
 
 function update() {
+    var tIn = d3.transition()
+        .duration(1000);
+
+    var tOut = d3.transition()
+        .duration(1000);
+
     var link = svg.selectAll('.link')
         .data(data.links);
 
@@ -79,7 +86,12 @@ function update() {
 
     var linkEnter = link
         .enter().append('path')
-        .attr('class', 'link');
+        .attr('class', 'link')
+        .style('opacity',1e-6);
+    
+    linkEnter.transition(tIn)
+        .delay(250)
+        .style('opacity',1);
 
     var nodeEnter = node
         .enter().append('g')
@@ -95,8 +107,12 @@ function update() {
             }
 
             return _id;
-        });
-
+        })
+        .style('opacity',1e-6);
+    
+    nodeEnter.transition(tIn)
+        .style('opacity',1);
+    
     // configure behavior when nodes enter
     // append ellipse to each node group
     nodeEnter
