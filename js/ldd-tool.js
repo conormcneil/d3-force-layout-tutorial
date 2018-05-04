@@ -72,6 +72,8 @@ function main(json) {
 };
 
 function update() {
+    console.log('nodes',data.nodes);
+    console.log('links',data.links);
     var tIn = d3.transition()
         .duration(1000);
 
@@ -90,7 +92,7 @@ function update() {
         .style('opacity',1e-6);
     
     linkEnter.transition(tIn)
-        .delay(250)
+        .delay(100)
         .style('opacity',1);
 
     var nodeEnter = node
@@ -111,17 +113,21 @@ function update() {
         .style('opacity',1e-6);
     
     nodeEnter.transition(tIn)
-        .style('opacity',1);
+        .style('opacity',1)
     
     // configure behavior when nodes enter
     // append ellipse to each node group
     nodeEnter
         .append('ellipse')
-        .attr('rx', rx)
-        .attr('ry', ry)
         .attr('class', 'circle')
         .style('stroke', nodeStroke)
-        .style('fill', highlightNode);
+        .style('fill', highlightNode)
+        .attr('rx',1e-6)
+        .attr('ry',1e-6)
+        .transition(tIn)
+        .attr('rx', rx)
+        .attr('ry', ry)
+        
     // append text to each node group
     nodeEnter
         .append('text')
@@ -133,7 +139,11 @@ function update() {
             return `${maths}px`;
         })
         .attr('dx', '-75px')
-        .attr('dy', '.25em');
+        .attr('dy', '.25em')
+        .style('opacity',1e-6)
+        .transition(tIn)
+        .delay(750)
+        .style('opacity',1);
     nodeEnter
         .attr('transform', function(d, idx) {
             // configure horiontal (x) position
@@ -161,6 +171,16 @@ function update() {
         .attr('fill', 'none')
         .attr('stroke', linkStroke)
         .attr('stroke-width', linkStrokeWidth);
+    
+    var linkExit = link.exit()
+        .transition(tOut)
+        .style('opacity',1e-6)
+        .remove();
+    
+    var nodeExit = node.exit()
+        .transition(tOut)
+        .style('opacity',1e-6)
+        .remove();
 };
 
 function initGrid() {
