@@ -118,10 +118,6 @@ function update() {
             d.lid = lidId;
 
             return d.lid;
-        })
-        // TODO transition on update here:
-        .attr('transform',function(d) {
-            return `translate(${d.x},${d.y})`;
         });
 
     var linkEnter = link
@@ -224,14 +220,27 @@ function update() {
         .style('opacity',1e-6)
         .remove();
     
-    link.attr('d', d3.linkHorizontal()
-        .x(function(l,idx) {
-            return getNodeByIdx(l).x;
-        })
-        .y(function(l,idx) {        
-            return getNodeByIdx(l).y;
-        })
-    );
+    // TODO transition on update here:
+    node
+        .transition()
+        .duration(750)
+        .delay(1000)
+        .attr('transform',function(d) {
+            return `translate(${d.x},${d.y})`;
+        });
+    
+    link
+        .transition()
+        .duration(750)
+        .delay(1000)
+        .attr('d', d3.linkHorizontal()
+            .x(function(l,idx) {
+                return getNodeByIdx(l).x;
+            })
+            .y(function(l,idx) {        
+                return getNodeByIdx(l).y;
+            })
+        );
 };
 
 function initGrid() {
