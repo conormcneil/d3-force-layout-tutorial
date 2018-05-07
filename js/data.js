@@ -185,6 +185,8 @@ function Data(json) {
         let deleteIdx;
         let parentClass = nodeType == 'attribute' ? 'DD_Attribute' : 'DD_Class';
         
+        if (nodeType == 'class') return console.error('cannot delete classes. this feature has not been implemented yet.');
+        
         // remove node from corresponding parentClass array
         let array = data.model['Ingest_LDD'][parentClass];
         
