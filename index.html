@@ -48,6 +48,17 @@ svg {
 .view {
     fill: none;
 }
+#download {
+    position: absolute;
+    top: 5em;
+    left: 5em;
+    height: 9em;
+    width: 15em;
+    background: yellow;
+    border-radius: 1em;
+    z-index: 999;
+    cursor: pointer;
+}
 #modal {
     padding: 1em;
     display: none;
@@ -97,6 +108,8 @@ svg {
 </style>
 
 <body>
+    
+    <button id="download">Download</button>
 
     <div id="modal">
         <h2 id="modalTitle"></h2>
