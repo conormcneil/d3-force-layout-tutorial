@@ -52,14 +52,21 @@ function Data(json) {
             if (targets && targets.length) {
                 targets.map(target => {
 
-                    let targetLid;
-
+                    let sourceLid,
+                        targetLid;
+                    
+                    try {
+                        sourceLid = e['local_identifier'][0];
+                    } catch (err) {
+                        sourceLid = e['identifier_reference'][0];
+                    }
+                    
                     try {
                         targetLid = target['local_identifier'][0];
                     } catch (err) {
                         targetLid = target['identifier_reference'][0];
                     }
-
+                    // console.log(sourceLid,targetLid);
                     // invalid 
                     if (targetLid == 'XSChoice#') return;
 
@@ -90,7 +97,7 @@ function Data(json) {
                         let l = {
                             source: idx,
                             target: _targetIdx,
-                            id: id++
+                            id: `${sourceLid}:${targetLid}`
                         };
                         this.links.push(l);
                     } else {
@@ -98,7 +105,7 @@ function Data(json) {
                         let l = {
                             source: idx,
                             target: t,
-                            id: id++
+                            id: `${sourceLid}:${targetLid}`
                         };
                         this.links.push(l);
                     }

@@ -79,8 +79,18 @@ function update() {
 
     var link = svg.selectAll('.link')
         .data(data.links,function(l,idx) {
-            l.id = `${l.source}T${l.target}`;
             return l.id;
+        })
+        .datum(function(l,i,nodes) {
+            // update link values to reflect new data indices
+            let st = l.id.split(':');
+            let s = data.getNode(st[0],true);
+            let t = data.getNode(st[1],true);
+            
+            l.source = s;
+            l.target = t;
+            
+            return l;
         });
 
     var node = svg.selectAll('g')
@@ -104,8 +114,14 @@ function update() {
 
             // configure vertical (y) position
             d.y = verticalOffset + idx * verticalSpacing;
+            
+            d.lid = lidId;
 
-            return lidId;
+            return d.lid;
+        })
+        // TODO transition on update here:
+        .attr('transform',function(d) {
+            return `translate(${d.x},${d.y})`;
         });
 
     var linkEnter = link
@@ -194,25 +210,28 @@ function update() {
             })
         )
         .attr('fill', 'none')
-        .attr('stroke', 'pink')
-        .attr('stroke-width', linkStrokeWidth)
-        .filter(function(l) {
-            return false;
-        });
+        .attr('stroke', linkStroke)
+        .attr('stroke-width', linkStrokeWidth);
     
     // // // REMOVE // // //
-    var linkExit = link.exit()
-        .transition(tOut)
-        .style('opacity',1e-6)
-        .each(function(l) {
-            console.log('removing ',l);
-        })
-        .remove();
-    
     var nodeExit = node.exit()
         .transition(tOut)
         .style('opacity',1e-6)
         .remove();
+    
+    var linkExit = link.exit()
+        .transition(tOut)
+        .style('opacity',1e-6)
+        .remove();
+    
+    link.attr('d', d3.linkHorizontal()
+        .x(function(l,idx) {
+            return getNodeByIdx(l).x;
+        })
+        .y(function(l,idx) {        
+            return getNodeByIdx(l).y;
+        })
+    );
 };
 
 function initGrid() {
