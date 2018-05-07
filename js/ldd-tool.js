@@ -414,3 +414,20 @@ function click(event) {
         newModal(event);
     }
 };
+
+$('#download').on('click',function(e) {
+    e.preventDefault();
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:3000/jsontoxml',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(data.model),
+        success: function(res) {
+            console.log(res);
+            var blob = new Blob([res], {type: "text/xml;charset=utf-8"});
+            saveAs(blob,'ldd.out.xml');
+        }
+    });
+});
