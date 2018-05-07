@@ -14,9 +14,9 @@ function Data(json) {
     };
 
     this.rootNodes = [];
-
+    
     this.defineNodesAndLinks = function() {
-        
+        // create/update nodes and links
         this.nodes = [];
         
         this.links = [];
@@ -27,6 +27,7 @@ function Data(json) {
         let dd_attribute = model['Ingest_LDD']['DD_Attribute'];
 
         let _classes = dd_class.concat(dd_attribute);
+        console.log(_classes);
 
         // // // /// // // //  // // //
         // set class name for each node
@@ -42,6 +43,7 @@ function Data(json) {
             return e;
         });
 
+        let id = 0;
         this.nodes.map((e, idx) => {
 
             e.children = [];
@@ -88,7 +90,7 @@ function Data(json) {
                         let l = {
                             source: idx,
                             target: _targetIdx,
-                            id: `${idx}.${_targetIdx}`
+                            id: id++
                         };
                         this.links.push(l);
                     } else {
@@ -96,7 +98,7 @@ function Data(json) {
                         let l = {
                             source: idx,
                             target: t,
-                            id: `${idx}.${t}`
+                            id: id++
                         };
                         this.links.push(l);
                     }
@@ -169,6 +171,7 @@ function Data(json) {
     };
     
     this.deleteNode = function(lid) {
+        // update model
         let that = this;
         let node = this.getNode(lid);
         let nodeType = node.className;
@@ -212,14 +215,30 @@ function Data(json) {
                     associations.splice(aIdx,1);
                 }
             });
-            
+        
         });
         
-        // node has been removed from data.model
-        // update nodes and links
-        this.defineNodesAndLinks();
-        // now update the DOM/D3
+        // update d3
+        let i = null;
+        this.nodes.map((d,idx) => {
+            let dId;
+            
+            try {
+                dId = d['local_identifier'][0];
+            } catch (err) {
+                dId = d['identifier_reference'][0];
+            }
+            
+            if (dId == lid) i = idx;
+        });
+        
+        this.nodes.splice(i,1);
+        this.links = this.links.filter(l => {
+            return l.source != i && l.target != i;
+        });
+        
         update();
+        
     };
     
     this.parents = function(lid,getIdx) {

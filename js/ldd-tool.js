@@ -69,7 +69,7 @@ function main(json) {
 
     update();
 };
-
+let i = 0;
 function update() {
     var tIn = d3.transition()
         .duration(1000);
@@ -78,12 +78,15 @@ function update() {
         .duration(1000);
 
     var link = svg.selectAll('.link')
-        .data(data.links, function(l) {
+        .data(data.links,function(l,idx) {
+            l.id = `${l.source}T${l.target}`;
             return l.id;
         });
 
     var node = svg.selectAll('g')
-        .data(data.nodes,function(d) {
+        .data(data.nodes,function(d,idx) {
+            // this is update because:
+            // on enter(), these nodes don't actually exist yet
             let lidId;
             
             try {
@@ -92,6 +95,16 @@ function update() {
                 lidId = d['identifier_reference'][0];
             }
             
+            // configure horiontal (x) position
+            let colWidth = 500;
+            let xOffset = 300;
+
+            if (d.rootNode) d.x = colWidth - xOffset;
+            else d.x = d.col * colWidth - xOffset;
+
+            // configure vertical (y) position
+            d.y = verticalOffset + idx * verticalSpacing;
+
             return lidId;
         });
 
@@ -119,7 +132,10 @@ function update() {
 
             return _id;
         })
-        .style('opacity',1e-6);
+        .style('opacity',1e-6)
+        .attr('transform', function(d,idx) {
+            return `translate(${d.x,d.y})`;
+        });
     
     nodeEnter.transition(tIn)
         .style('opacity',1)
@@ -178,13 +194,19 @@ function update() {
             })
         )
         .attr('fill', 'none')
-        .attr('stroke', linkStroke)
-        .attr('stroke-width', linkStrokeWidth);
+        .attr('stroke', 'pink')
+        .attr('stroke-width', linkStrokeWidth)
+        .filter(function(l) {
+            return false;
+        });
     
     // // // REMOVE // // //
     var linkExit = link.exit()
         .transition(tOut)
         .style('opacity',1e-6)
+        .each(function(l) {
+            console.log('removing ',l);
+        })
         .remove();
     
     var nodeExit = node.exit()
