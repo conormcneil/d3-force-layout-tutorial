@@ -173,6 +173,21 @@
             "submitter_name": ["Todd King"],
             "definition": ["The Primary_Values class describes the values which are the primary observation data array."],
             "DD_Association": [{
+                "local_identifier": ["pds.name"],
+                "reference_type": ["attribute_of"],
+                "minimum_occurrences": ["1"],
+                "maximum_occurrences": ["1"]
+            }, {
+                "local_identifier": ["pds.local_identifier"],
+                "reference_type": ["attribute_of"],
+                "minimum_occurrences": ["0"],
+                "maximum_occurrences": ["1"]
+            }, {
+                "local_identifier": ["pds.description"],
+                "reference_type": ["attribute_of"],
+                "minimum_occurrences": ["1"],
+                "maximum_occurrences": ["1"]
+            }, {
                 "local_identifier": ["wave.Local_Internal_Reference"],
                 "reference_type": ["component_of"],
                 "minimum_occurrences": ["1"],
