@@ -211,7 +211,11 @@ function Data(json) {
             return l.source != i && l.target != i;
         });
         
-        if (linkCount < 1) this.nodes.splice(i,1);
+        if (linkCount < 1) {
+            this.nodes.splice(i,1);
+        } else {
+            // TODO remove border highlight from deleted node
+        }
         
         // // // // // Update Model // // // // //
         // remove node from 'DD_Association' and 'chilren' arrays
