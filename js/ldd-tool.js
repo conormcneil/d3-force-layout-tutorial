@@ -69,7 +69,7 @@ function main(json) {
 
     update();
 };
-let i = 0;
+
 function update() {
     var tIn = d3.transition()
         .duration(1000);

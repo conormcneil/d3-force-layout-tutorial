@@ -27,7 +27,6 @@ function Data(json) {
         let dd_attribute = model['Ingest_LDD']['DD_Attribute'];
 
         let _classes = dd_class.concat(dd_attribute);
-        console.log(_classes);
 
         // // // /// // // //  // // //
         // set class name for each node
@@ -178,57 +177,14 @@ function Data(json) {
     };
     
     this.deleteNode = function(lid) {
-        // update model
-        let that = this;
         let node = this.getNode(lid);
         let nodeType = node.className;
-        let deleteIdx;
         let parentClass = nodeType == 'attribute' ? 'DD_Attribute' : 'DD_Class';
+        let linkCount = 0;
         
         if (nodeType == 'class') return console.error('cannot delete classes. this feature has not been implemented yet.');
         
-        // remove node from corresponding parentClass array
-        let array = data.model['Ingest_LDD'][parentClass];
-        
-        array.map((element,idx) => {
-            let eLid;
-            
-            try {
-                eLid = element['local_identifier'][0];
-            } catch (err) {
-                eLid = element['identifier_reference'][0];
-            }
-            
-            if (eLid == lid) deleteIdx = idx;
-        });
-        array.splice(deleteIdx,1);
-        
-        // remove any references to node from remaining elements in 'DD_Class'
-        let ddClass = data.model['Ingest_LDD']['DD_Class'];
-        
-        ddClass.map(c => {
-            let className = c['local_identifier'][0];
-            let associations = c['DD_Association'];
-            let associationIdxs = [];
-            
-            associations.map((a,aIdx) => {
-                let aLid;
-                
-                try {
-                    aLid = a['local_identifier'][0];
-                } catch (err) {
-                    aLid = a['identifier_reference'][0];
-                }
-                
-                if (aLid == lid) {
-                    associations.splice(aIdx,1);
-                }
-            });
-        
-        });
-        
-        // update d3
-        let i = null;
+        // // // // // Update d3 // // // // //
         this.nodes.map((d,idx) => {
             let dId;
             
@@ -241,13 +197,27 @@ function Data(json) {
             if (dId == lid) i = idx;
         });
         
-        this.nodes.splice(i,1);
         this.links = this.links.filter(l => {
+            let activeParent;
+            
+            let lids = l.id.split(':');
+            
+            if (lids[0] == activeNode.lid) activeParent = true;
+            
+            if (l.target == i && !activeParent) {
+                linkCount++;
+                return true;
+            }
             return l.source != i && l.target != i;
         });
         
-        update();
+        if (linkCount < 1) this.nodes.splice(i,1);
         
+        // // // // // Update Model // // // // //
+        // remove node from 'DD_Association' and 'chilren' arrays
+        this.removeAssociation(lid);
+        
+        update();
     };
     
     this.parents = function(lid,getIdx) {
@@ -291,6 +261,30 @@ function Data(json) {
         
         if (getIdx) return nodeIdx;
         else return node;
+    };
+    
+    this.removeAssociation = function(associatedLid) {
+        let pLid = activeNode.lid;      // parent lid
+        let aLid = associatedLid;       // associated lid
+        
+        this.nodes.map(d => {
+            if (d.lid == pLid) {
+                d['DD_Association'] = d['DD_Association'].filter(a => {
+                    try {
+                        return (a['local_identifier'][0] == aLid) ? false : true;
+                    } catch (err) {
+                        return (a['identifier_reference'][0] == aLid) ? false : true;
+                    }
+                });
+                d['children'] = d['children'].filter(c => {
+                    try {
+                        return (c['local_identifier'][0] == aLid) ? false : true;
+                    } catch (err) {
+                        return (c['identifier_reference'][0] == aLid) ? false : true;
+                    }
+                });
+            };
+        });
     };
     
     this.defineNodesAndLinks();
