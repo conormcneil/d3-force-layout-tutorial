@@ -27,6 +27,7 @@ function newModal(event) {
         let children = event['DD_Association'];
         
         $('#modal').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
+        $('#modal').append('<i class="fas fa-3x fa-plus-circle add-node" onclick="addNode()"></i>');
         
         $('#modalTitle').text(event['local_identifier'][0]);
         $('#modalBody').append(`<h3>Child Nodes (${children.length}):</h3>`)
@@ -90,6 +91,40 @@ function newModal(event) {
         return `<form name="${childLid}-form" class="modalChild">${childTitle}${values}${childButtons}</form>`;
     };
 };
+
+function addNode() {
+    // close any open modals
+    closeModal();
+    
+    let newNodeModal = new Custombox.modal({
+        content: {
+            effect: 'slide',
+            id: 'addnode',
+            target: '#add-node',
+            onOpen: addNodeModal
+        }
+    });
+    
+    newNodeModal.open();
+};
+
+function addNodeModal() {
+    $('#add-node').empty();
+    
+    $('#add-node').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
+    
+    $('#add-node').append(`<h2>Add New Node</h2>`);
+    
+    $('#add-node').append(`<form id="add-new-node" name="add-new-node"></form>`);
+    
+    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
+    $('#add-new-node').append(`<label for="reference_type">reference_type</label><select name="reference_type" id="reference_type"><option value="component_of">component_of</option><option value="attribute_of">attribute_of</option></select>`);
+    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
+    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
+    
+    $('#add-node').append('<button id="cancel">Cancel</button>');
+    $('#add-node').append('<button id="save">Save</button>');
+}
 
 function closeModal() {
     Custombox.modal.close();

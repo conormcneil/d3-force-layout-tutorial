@@ -33,6 +33,9 @@ svg {
     margin: 0;
     padding: 0;
 }
+button {
+    cursor: pointer;
+}
 .link {
     fill: none;
 }
@@ -61,12 +64,13 @@ svg {
     cursor: pointer;
     display: none;
 }
-#modal {
+.modal {
     padding: 1em;
     display: none;
     position: relative;
     background: white;
     width: 40vw;
+    min-height: 40vh;
     display: flex;
     justify-content: center;
     overflow: scroll;
@@ -79,6 +83,18 @@ svg {
     top: 0.5em;
     right: 0.5em;
     cursor: pointer;
+}
+.add-node {
+    padding: 0.1em;
+    position: absolute;
+    top: 0.5em;
+    left: 0.5em;
+    cursor: pointer;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 #modalTitle {
     text-align: center;
@@ -113,10 +129,12 @@ svg {
     
     <button id="download">Download</button>
 
-    <div id="modal">
+    <div id="modal" class="modal">
         <h2 id="modalTitle"></h2>
         <div id="modalBody"></div>
     </div>
+    
+    <div id="add-node" class="modal"></div>
 
     <svg class="main"></svg>
 
