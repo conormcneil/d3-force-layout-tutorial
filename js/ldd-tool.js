@@ -1,7 +1,7 @@
 var id,
     data,
     svg,
-    ldd = 'wavez',
+    ldd = 'wave',
     width = $(document).width() - 10,
     height = $(document).height() - 10,
     activeNode = null,
