@@ -137,6 +137,7 @@ function next() {
     max = document.getElementById('maximum_occurrences').value;
     
     newNode.identifier_reference = i_r;
+    newNode.lid = i_r;
     newNode.reference_type = r_t;
     newNode.minimum_occurrences = min;
     newNode.maximum_occurrences = max;
