@@ -1,4 +1,5 @@
 var modal = null;
+var newNode = {};
 
 function newModal(event) {
     let lid;
@@ -27,7 +28,7 @@ function newModal(event) {
         let children = event['DD_Association'];
         
         $('#modal').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
-        $('#modal').append('<i class="fas fa-3x fa-plus-circle add-node" onclick="addNode()"></i>');
+        $('#modal').append('<i class="fas fa-3x fa-plus-circle create-node" onclick="createNode()"></i>');
         
         $('#modalTitle').text(event['local_identifier'][0]);
         $('#modalBody').append(`<h3>Child Nodes (${children.length}):</h3>`)
@@ -92,39 +93,74 @@ function newModal(event) {
     };
 };
 
-function addNode() {
+function createNode() {
     // close any open modals
     closeModal();
+    
+    // reset newNode
+    newNode = {};
     
     let newNodeModal = new Custombox.modal({
         content: {
             effect: 'slide',
             id: 'addnode',
-            target: '#add-node',
-            onOpen: addNodeModal
+            target: '#create-node',
+            onOpen: createNodeModal
         }
     });
     
     newNodeModal.open();
 };
 
-function addNodeModal() {
-    $('#add-node').empty();
+function createNodeModal() {
+    $('#create-node').empty();
     
-    $('#add-node').append('<i class="far fa-3x fa-times-circle modal-close" onclick="closeModal()"></i>');
+    $('#create-node').load('partials/create.1.html',addListeners);
+};
+
+function next() {
+    // TODO form validation
     
-    $('#add-node').append(`<h2>Add New Node</h2>`);
+    let i_r = document.getElementById('identifier_reference').value;
+    let r_t = document.getElementById('reference_type').value;
+    let min = document.getElementById('minimum_occurrences').value;
+    let max = document.getElementById('maximum_occurrences').value;
     
-    $('#add-node').append(`<form id="add-new-node" name="add-new-node"></form>`);
+    newNode.identifier_reference = i_r;
+    newNode.reference_type = r_t;
+    newNode.minimum_occurrences = min;
+    newNode.maximum_occurrences = max;
     
-    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
-    $('#add-new-node').append(`<label for="reference_type">reference_type</label><select name="reference_type" id="reference_type"><option value="component_of">component_of</option><option value="attribute_of">attribute_of</option></select>`);
-    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
-    $('#add-new-node').append(`<label for="identifier_reference">identifier_reference</label><input type="text" name="identifier_reference" id="identifier_reference">`);
+    $('#create-node').empty();
     
-    $('#add-node').append('<button id="cancel">Cancel</button>');
-    $('#add-node').append('<button id="save">Save</button>');
-}
+    $('#create-node').load('partials/create.2.html',addListeners);
+};
+
+function saveNode() {
+    let name = document.getElementById('name').value;
+    let v_id = document.getElementById('version_id').value;
+    let s_n = document.getElementById('submitter_name').value;
+    let def = document.getElementById('definition').value;
+    
+    newNode.name = name;
+    newNode.version_id = v_id;
+    newNode.submitter_name = s_n;
+    newNode.definition = def;
+    
+    console.log('save the node!',newNode);
+    
+    // metadata has been collected from user:
+    // update model and d3
+    
+};
+
+function addListeners() {
+    $('#cancel').on('click', closeModal);
+
+    $('#next').on('click', next);
+
+    $('#save').on('click', saveNode);
+};
 
 function closeModal() {
     Custombox.modal.close();
