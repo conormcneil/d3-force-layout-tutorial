@@ -304,7 +304,7 @@ function Data(json) {
         let modelArray = type == 'class' ? 'DD_Class' : 'DD_Attribute';
         
         // // // // // UPDATE MODEL // // // // //
-        // TODO add global keyword definition
+        // add global keyword definition
         let nodeGlobal = {
             name: [node.name],
             version_id: [node.version_id],
@@ -321,7 +321,7 @@ function Data(json) {
         }
         this.model['Ingest_LDD'][modelArray].push(nodeGlobal);
         
-        // TODO add keyword instance definiton to 
+        // add keyword instance definiton to 
         // parent node "DD_Association" and "children" arrays
         let nodeInstance = {
             name: [node.name],
