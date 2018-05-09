@@ -118,13 +118,23 @@ function createNodeModal() {
     $('#create-node').load('partials/create.1.html',addListeners);
 };
 
+var i_r;
+var r_t;
+var min;
+var max;
+var name;
+var v_id;
+var s_n;
+var def;
+var n_f;
+
 function next() {
     // TODO form validation
     
-    let i_r = document.getElementById('identifier_reference').value;
-    let r_t = document.getElementById('reference_type').value;
-    let min = document.getElementById('minimum_occurrences').value;
-    let max = document.getElementById('maximum_occurrences').value;
+    i_r = document.getElementById('identifier_reference').value;
+    r_t = document.getElementById('reference_type').value;
+    min = document.getElementById('minimum_occurrences').value;
+    max = document.getElementById('maximum_occurrences').value;
     
     newNode.identifier_reference = i_r;
     newNode.reference_type = r_t;
@@ -133,19 +143,22 @@ function next() {
     
     $('#create-node').empty();
     
-    $('#create-node').load('partials/create.2.html',addListeners);
+    if (r_t == 'component_of')$('#create-node').load('partials/create.2.class.html',addListeners);
+    else if (r_t == 'attribute_of')$('#create-node').load('partials/create.2.attribute.html',addListeners);
 };
 
 function saveNode() {
-    let name = document.getElementById('name').value;
-    let v_id = document.getElementById('version_id').value;
-    let s_n = document.getElementById('submitter_name').value;
-    let def = document.getElementById('definition').value;
+    name = document.getElementById('name').value;
+    v_id = document.getElementById('version_id').value;
+    s_n = document.getElementById('submitter_name').value;
+    def = document.getElementById('definition').value;
+    if (r_t == 'attribute_of') n_f = document.getElementById('nillable_flag').value;
     
     newNode.name = name;
     newNode.version_id = v_id;
     newNode.submitter_name = s_n;
     newNode.definition = def;
+    newNode.nillable_flag = n_f;
     
     // metadata has been collected from user:
     // update model and d3

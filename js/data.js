@@ -294,40 +294,44 @@ function Data(json) {
     // // // // // // // CREATE // // // // // // //
     this.addNode = function(node) {
         let type = node.reference_type == 'component_of' ? 'class' : 'attribute';
-        type = 'attribute';
         let modelArray = type == 'class' ? 'DD_Class' : 'DD_Attribute';
-        console.log(node);
-        
-        let nodeInstance = {
-            name: ['node'],
-            col: activeNode.col + 1,
-            identifier_reference: ['test.node'],
-            reference_type: ['attribute_of'],
-            minimum_occurrences: ['0'],
-            maximum_occurrences: ['1']
-        };
-        let nodeGlobal = {
-            name: ['node'],
-            version_id: ['1.0'],
-            identifier_reference: ['test.node'],
-            submitter_name: ['Conor Kingston'],
-            definition: ['node definition']
-        };
-        
-        if (type == 'class') {
-            // TODO customize node
-            
-        } else {
-            // TODO customize node
-            
-        }
         
         // // // // // UPDATE MODEL // // // // //
         // TODO add global keyword definition
+        let nodeGlobal = {
+            name: [node.name],
+            version_id: [node.version_id],
+            identifier_reference: [node.identifier_reference],
+            submitter_name: [node.submitter_name],
+            definition: [node.definition]
+        };
+        if (type == 'class') {
+            nodeGlobal['DD_Association'] = [];
+            nodeGlobal['children'] = [];
+        } else if (type == 'attribute') {
+            nodeGlobal['nillable_flag'] = [node.nillable_flag],
+            nodeGlobal['DD_Value_Domain'] = [];
+        }
         this.model['Ingest_LDD'][modelArray].push(nodeGlobal);
         
         // TODO add keyword instance definiton to 
         // parent node "DD_Association" and "children" arrays
+        let nodeInstance = {
+            name: [node.name],
+            col: activeNode.col + 1,
+            className: type,
+            definition: [node.definition],
+            identifier_reference: [node.identifier_reference],
+            version_id: [node.version_id],
+            submitter_name: [node.submitter_name],
+            definition: [node.definition],
+            
+            identifier_reference: [node.identifier_reference],
+            reference_type: [node.reference_type],
+            minimum_occurrences: [node.minimum_occurrences],
+            maximum_occurrences: [node.maximum_occurrences],
+            name: [node.name]
+        };
         let modelParent = this.model['Ingest_LDD']['DD_Class'].find(p => { return p['local_identifier'][0] == activeNode.lid; });
         let modelIdx = this.model['Ingest_LDD']['DD_Class'].indexOf(modelParent);
 
