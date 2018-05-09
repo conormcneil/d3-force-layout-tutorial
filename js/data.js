@@ -181,8 +181,9 @@ function Data(json) {
         let nodeType = node.className;
         let parentClass = nodeType == 'attribute' ? 'DD_Attribute' : 'DD_Class';
         let linkCount = 0;
+        let i = null;
         
-        if (nodeType == 'class') return console.error('cannot delete classes. this feature has not been implemented yet.');
+        // if (nodeType == 'class') return console.error('cannot delete classes. this feature has not been implemented yet.');
         
         // // // // // Update d3 // // // // //
         this.nodes.map((d,idx) => {
@@ -197,7 +198,14 @@ function Data(json) {
             if (dId == lid) i = idx;
         });
         
-        this.links = this.links.filter(l => {
+        // remove link
+        let dLink = this.links.find(l => {
+            return l.source == this.nodes.indexOf(activeNode) && l.target == i;
+        });
+        
+        this.links.splice(this.links.indexOf(dLink),1);
+        
+        this.links.map(l => {
             let activeParent;
             
             let lids = l.id.split(':');
@@ -208,7 +216,6 @@ function Data(json) {
                 linkCount++;
                 return true;
             }
-            return l.source != i && l.target != i;
         });
         
         if (linkCount < 1) {

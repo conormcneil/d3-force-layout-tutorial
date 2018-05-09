@@ -77,6 +77,11 @@
                 "reference_type": ["attribute_of"],
                 "minimum_occurrences": ["1"],
                 "maximum_occurrences": ["1"]
+            }, {
+                "local_identifier": ["pds.name"],
+                "reference_type": ["attribute_of"],
+                "minimum_occurrences": ["1"],
+                "maximum_occurrences": ["1"]
             }]
         }, {
             "name": ["Face_Values"],
