@@ -2,8 +2,8 @@ var id,
     data,
     svg,
     ldd = 'wave',
-    width = $(document).width() - 10,
-    height = $(document).height() - 10,
+    width = $(document).width(),
+    height = $(document).height(),
     activeNode = null,
     tDuration = 1000, // transition duration (ms)
     // click event variables
