@@ -147,11 +147,12 @@ function saveNode() {
     newNode.submitter_name = s_n;
     newNode.definition = def;
     
-    console.log('save the node!',newNode);
-    
     // metadata has been collected from user:
     // update model and d3
+    data.addNode(newNode);
     
+    // close modal
+    closeModal();
 };
 
 function addListeners() {

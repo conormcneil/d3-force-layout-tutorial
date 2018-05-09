@@ -291,5 +291,64 @@ function Data(json) {
         });
     };
     
+    // // // // // // // CREATE // // // // // // //
+    this.addNode = function(node) {
+        let type = node.reference_type == 'component_of' ? 'class' : 'attribute';
+        type = 'attribute';
+        let modelArray = type == 'class' ? 'DD_Class' : 'DD_Attribute';
+        console.log(node);
+        
+        let nodeInstance = {
+            name: ['node'],
+            col: activeNode.col + 1,
+            identifier_reference: ['test.node'],
+            reference_type: ['attribute_of'],
+            minimum_occurrences: ['0'],
+            maximum_occurrences: ['1']
+        };
+        let nodeGlobal = {
+            name: ['node'],
+            version_id: ['1.0'],
+            identifier_reference: ['test.node'],
+            submitter_name: ['Conor Kingston'],
+            definition: ['node definition']
+        };
+        
+        if (type == 'class') {
+            // TODO customize node
+            
+        } else {
+            // TODO customize node
+            
+        }
+        
+        // // // // // UPDATE MODEL // // // // //
+        // TODO add global keyword definition
+        this.model['Ingest_LDD'][modelArray].push(nodeGlobal);
+        
+        // TODO add keyword instance definiton to 
+        // parent node "DD_Association" and "children" arrays
+        let modelParent = this.model['Ingest_LDD']['DD_Class'].find(p => { return p['local_identifier'][0] == activeNode.lid; });
+        let modelIdx = this.model['Ingest_LDD']['DD_Class'].indexOf(modelParent);
+
+        this.model['Ingest_LDD']['DD_Class'][modelIdx]['DD_Association'].push(nodeInstance);
+        this.model['Ingest_LDD']['DD_Class'][modelIdx]['children'].push(nodeInstance);
+        
+        // // // // // UPDATE D3 // // // // //
+
+        let parent = this.nodes.find(el => { return el.lid == activeNode.lid; });
+        let parentIdx = this.nodes.indexOf(parent);
+        
+        this.nodes.splice(parentIdx + 1,0,nodeInstance);
+        
+        this.links.push({
+            source: parentIdx,
+            target: parentIdx + 1,
+            id: `${parent.lid}:${node.lid}`
+        });
+        
+        update();
+    };
+    
     this.defineNodesAndLinks();
 };
