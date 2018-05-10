@@ -430,6 +430,7 @@ function getNodeByIdx(nodeIdx) {
 function updateToolbar(flag) {
     $('#active-node-title').empty();
     $('#active-node-children').empty();
+    $('#create-node').remove();
     
     if (flag === null) return;
     
@@ -438,9 +439,12 @@ function updateToolbar(flag) {
     $('#active-node-title').text(node.lid);
 
     // update toolbar - node children
-    node.children.map(a => {
+    if (node.children) node.children.map(a => {
         $('#active-node-children').append(newActiveChild(a));
     });
+    
+    // update toolbar - create node button
+    $('#toolbar').append(`<i class="fas fa-plus fa-lg" id="create-node"></i>`);
     
     addListeners();
 };
@@ -488,6 +492,8 @@ function addListeners() {
     $('#next').on('click', next);
 
     $('#save').on('click', saveNode);
+    
+    $('#create-node').on('click',createNode);
     
     // add event listeners to trash icons now that they exist in DOM
     $('.fa-trash-alt').on('click',function(event) {

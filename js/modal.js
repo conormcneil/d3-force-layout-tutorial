@@ -2,28 +2,26 @@ var modal = null;
 var newNode = {};
 
 function createNode() {
-    // close any open modals
-    closeModal();
-    
     // reset newNode
     newNode = {};
     
-    let newNodeModal = new Custombox.modal({
+    modal = new Custombox.modal({
         content: {
             effect: 'slide',
             id: 'addnode',
-            target: '#create-node',
+            target: '#create-node-modal',
             onOpen: openModal
         }
     });
     
-    newNodeModal.open();
+    modal.open();
 };
 
 function openModal() {
-    $('#create-node').empty();
+    console.log('opening modal');
+    $('#create-node-modal').empty();
     
-    $('#create-node').load('partials/create.1.html',addListeners);
+    $('#create-node-modal').load('partials/create.1.html',addListeners);
 };
 
 var i_r;
@@ -50,10 +48,10 @@ function next() {
     newNode.minimum_occurrences = min;
     newNode.maximum_occurrences = max;
     
-    $('#create-node').empty();
+    $('#create-node-modal').empty();
     
-    if (r_t == 'component_of')$('#create-node').load('partials/create.2.class.html',addListeners);
-    else if (r_t == 'attribute_of')$('#create-node').load('partials/create.2.attribute.html',addListeners);
+    if (r_t == 'component_of')$('#create-node-modal').load('partials/create.2.class.html',addListeners);
+    else if (r_t == 'attribute_of')$('#create-node-modal').load('partials/create.2.attribute.html',addListeners);
 };
 
 function saveNode() {
@@ -72,6 +70,8 @@ function saveNode() {
     // metadata has been collected from user:
     // update model and d3
     data.addNode(newNode);
+    
+    toggleNodes();
     
     // close modal
     closeModal();

@@ -93,6 +93,12 @@ input, select {
     display: flex;
     flex-flow: column;
 }
+#create-node {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    cursor: pointer;
+}
 #active-node-title {
     text-align: center;
     margin: 1em 0;
@@ -106,7 +112,8 @@ input, select {
     width: 80%;
     position: relative;
     border: 1px solid black;
-    background: pink;
+    margin: 0.5em 0;
+    padding: 0.5em;
 }
 .active-child-buttons {
     position: absolute;
