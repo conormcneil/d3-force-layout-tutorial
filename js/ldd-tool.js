@@ -2,7 +2,8 @@ var id,
     data,
     svg,
     ldd = 'wave',
-    width = $(document).width(),
+    toolbarWidth = '400',
+    width = $(document).width() - toolbarWidth,
     height = $(document).height(),
     activeNode = null,
     tDuration = 1000, // transition duration (ms)
@@ -132,7 +133,7 @@ function update() {
     var nodeEnter = node
         .enter().append('g')
         .classed('node', true)
-        .on('click', click)
+        .on('click', toggleNodes)
         .attr('id', function(d) {
             let _id;
 
@@ -289,16 +290,36 @@ function initGrid() {
     };
 };
 
+var g1,
+    g2,
+    g3;
 function toggleNodes(node) {
     activeNodes = [];
-
-    let g1 = [node];
-    let g2 = nextGen(g1);
-    let g3 = nextGen(g2);
+    
+    if (node) {
+        g1 = [node];
+        g2 = nextGen(g1);
+        g3 = nextGen(g2);
+    } else {
+        g2 = nextGen(g1);
+        g3 = nextGen(g2);
+        nodeGen = g1.concat(g2);
+        activeNodes = activeNodes
+            .concat(g1)
+            .concat(g2)
+            .concat(g3)
+    }
 
     if (activeNode == node) {
+        updateToolbar(null);
         activeNode = null;
         nodeGen = [];
+    } else if (!node) {
+        activeNodes = activeNodes
+            .concat(g1)
+            .concat(g2)
+            .concat(g3);
+        updateToolbar();
     } else {
         nodeGen = g1.concat(g2);
         activeNode = node;
@@ -306,6 +327,7 @@ function toggleNodes(node) {
             .concat(g1)
             .concat(g2)
             .concat(g3);
+        updateToolbar();
     }
 
     svg.selectAll('.link')
@@ -405,23 +427,81 @@ function getNodeByIdx(nodeIdx) {
     return data.nodes[nodeIdx];
 };
 
-function click(event) {
-    clicks++; //count clicks
+function updateToolbar(flag) {
+    $('#active-node-title').empty();
+    $('#active-node-children').empty();
+    
+    if (flag === null) return;
+    
+    var node = activeNode;
+    // update toolbar - node title
+    $('#active-node-title').text(node.lid);
 
-    if (clicks === 1) {
-        toggleNodes(event);
-        // first click
-        timer = setTimeout(function() {
-            clicks = 0; // reset counter
-        }, delay);
-    } else {
-        // second click
-        clearTimeout(timer); // prevent single-click action
-        clicks = 0; // after action performed, reset counter
-        if (!activeNode) toggleNodes(event);
-        // TODO toggle d3 and form
-        newModal(event);
+    // update toolbar - node children
+    node.children.map(a => {
+        $('#active-node-children').append(newActiveChild(a));
+    });
+    
+    addListeners();
+};
+
+function newActiveChild(node) {
+    let childLid,
+        htmlChildLid;
+        
+    let keys = ['reference_type','minimum_occurrences','maximum_occurrences'];
+    
+    try {
+        childLid = node['local_identifier'][0];
+        keys.unshift('local_identifier');
+    } catch (err) {
+        childLid = node['identifier_reference'][0];
+        keys.unshift('identifier_reference');
     }
+    
+    htmlChildLid = childLid.replace('.','-');
+    
+    let childTitle = `<h3 id="childTitle">${childLid}</h3>`;
+    
+    let reference_type = node['reference_type'];
+    let minOcc = node['minimum_occurrences'];
+    let maxOcc = node['maximum_occurrences'];
+    
+    let values = '<div class="childKeys">' +
+    `<span class="childKey">${keys[0]}: <input type="text" id="${childLid}" name="${childLid}" value="${childLid}"></span>` + 
+    `<span class="childKey">${keys[1]}: <select id="${reference_type}" name="${reference_type}">
+    <option value="component_of">component_of</option>
+    <option value="attribute_of">attribute_of</option>
+    </select></span>` + 
+    `<span class="childKey">${keys[2]}: <input type="text" id="${minOcc}" name="${minOcc}" value="${minOcc}"></span>` + 
+    `<span class="childKey">${keys[3]}: <input type="text" id="${maxOcc}" name="${maxOcc}" value="${maxOcc}"></span>` + 
+    '</div>';
+    
+    let childButtons = `<div class="active-child-buttons ${htmlChildLid}"><i class="fas fa-lg fa-trash-alt"></i></div>`;
+    
+    return `<form name="${childLid}-form" class="active-child">${childTitle}${values}${childButtons}</form>`;
+};
+
+function addListeners() {
+    $('#cancel').on('click', closeModal);
+
+    $('#next').on('click', next);
+
+    $('#save').on('click', saveNode);
+    
+    // add event listeners to trash icons now that they exist in DOM
+    $('.fa-trash-alt').on('click',function(event) {
+        let target = event.target;
+        let _confirm = confirm('Are you sure you want to delete this node?');
+
+        if (_confirm) {
+            let deleteLid = $(target).parent().attr('class').split(' ')[1].trim().replace('-','.');
+            data.deleteNode(deleteLid);
+            toggleNodes();
+        } else {
+            return;
+        }
+    });
 };
 
 $('#download').on('click',function(e) {

@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
     <link rel="stylesheet" href="custombox/dist/custombox.min.css">
+    <link rel="stylesheet" href="css/style.css">
     
     <!-- ignore favicon -->
     <link rel="shortcut icon" href="about:blank">
@@ -23,127 +24,17 @@
     <title>Dictionary Tool</title>
 </head>
 
-<style>
-body {
-    margin: 0;
-    padding: 0;
-}
-svg {
-    position: absolute;
-    background: #f6f6f6;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-}
-button {
-    cursor: pointer;
-}
-.link {
-    fill: none;
-}
-.node {
-    cursor: pointer;
-}
-.axis path {
-    display: none;
-}
-.axis line {
-    stroke-opacity: 0.3;
-    shape-rendering: crispEdges;
-}
-.view {
-    fill: none;
-}
-#download {
-    position: absolute;
-    top: 5em;
-    left: 5em;
-    height: 9em;
-    width: 15em;
-    background: yellow;
-    border-radius: 1em;
-    z-index: 999;
-    cursor: pointer;
-    display: none;
-}
-.modal {
-    padding: 1em;
-    display: none;
-    position: relative;
-    background: white;
-    width: 40vw;
-    min-height: 40vh;
-    display: flex;
-    justify-content: center;
-    overflow: scroll;
-    box-shadow: 0 0 1em 0 black;
-    border-radius: 0.25em;
-}
-.modal-close {
-    padding: 0.1em;
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-    cursor: pointer;
-}
-.create-node {
-    padding: 0.1em;
-    position: absolute;
-    top: 0.5em;
-    left: 0.5em;
-    cursor: pointer;
-}
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-label {
-    margin-top: 1em;
-    display: flex;
-    flex-flow: row wrap;
-}
-input, select {
-    margin-left: 1em;
-}
-#modalTitle {
-    text-align: center;
-}
-.modalChild {
-    margin-top: 0.5em;
-    padding: 1em;
-    border: 1px solid black;
-    border-radius: 0.25em;
-    position: relative;
-}
-.modal-child-buttons {
-    position: absolute;
-    right: 0.5em;
-    top: 0.75em;
-    cursor: pointer;
-}
-#childTitle {
-    margin: 0;
-}
-.childKeys {
-    margin-top: 0.5em;
-    display: flex;
-    flex-direction: column;
-}
-.childKey {
-    margin-left: 1em;
-}
-</style>
-
 <body>
     
-    <button id="download">Download</button>
-
-    <div id="modal" class="modal">
-        <h2 id="modalTitle"></h2>
-        <div id="modalBody"></div>
+    <div id="toolbar">
+        <h2 id="active-node-title"></h2>
+        
+        <div id="active-node-children">
+            <h3 id="children-length"></h3>
+        </div>
     </div>
+    
+    <button id="download">Download</button>
     
     <div id="create-node" class="modal"></div>
 
