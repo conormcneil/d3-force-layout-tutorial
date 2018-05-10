@@ -10,7 +10,7 @@ svg {
     margin: 0;
     padding: 0;
 }
-button {
+button, i {
     cursor: pointer;
 }
 .link {
@@ -28,18 +28,6 @@ button {
 }
 .view {
     fill: none;
-}
-#download {
-    position: absolute;
-    top: 5em;
-    left: 5em;
-    height: 9em;
-    width: 15em;
-    background: yellow;
-    border-radius: 1em;
-    z-index: 999;
-    cursor: pointer;
-    display: none;
 }
 .modal {
     padding: 1em;
@@ -68,19 +56,6 @@ button {
     left: 0.5em;
     cursor: pointer;
 }
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-label {
-    margin-top: 1em;
-    display: flex;
-    flex-flow: row wrap;
-}
-input, select {
-    margin-left: 1em;
-}
 
 #toolbar {
     position: absolute;
@@ -93,11 +68,16 @@ input, select {
     display: flex;
     flex-flow: column;
 }
+#tools {
+    /*background: pink;*/
+    padding: 0.2em;
+}
 #create-node {
-    position: absolute;
-    top: 1em;
-    left: 1em;
-    cursor: pointer;
+    color: black;
+}
+#create-node-disabled {
+    cursor: default;
+    color: #acacac;
 }
 #active-node-title {
     text-align: center;
@@ -109,6 +89,7 @@ input, select {
     align-items: center;
 }
 .active-child {
+    text-align: center;
     width: 80%;
     position: relative;
     border: 1px solid black;
@@ -120,6 +101,11 @@ input, select {
     right: 0.5em;
     top: 0.75em;
     cursor: pointer;
+}
+.child-key {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
 }
 
 h1, h2, h3, h4, h5, h6 {

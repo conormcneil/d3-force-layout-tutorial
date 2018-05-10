@@ -424,23 +424,30 @@ function updateToolbar(flag) {
     $('#active-node-children').empty();
     $('#create-node').remove();
     
-    if (flag === null) return;
+    if (flag === null) return defaultToolbar();
+    else return nodeToolbar();
     
-    var node = activeNode;
-    // update toolbar - node title
-    $('#active-node-title').text(node.lid);
-
-    // update toolbar - node children
-    if (node.children) node.children.map(a => {
-        $('#active-node-children').append(newActiveChild(a));
-    });
+    function defaultToolbar() {
+        $('#tools').load('partials/tools.default.html');
+    };
     
-    // update toolbar - create node button
-    $('#toolbar').append(`<i class="fas fa-plus fa-lg" id="create-node"></i>`);
-    
-    addListeners();
+    function nodeToolbar() {
+        $('#tools').load('partials/tools.node.html',function() {
+            var node = activeNode;
+            // update toolbar - node title
+            $('#active-node-title').text('node.lid');
+            
+            // update toolbar - node children
+            if (node.children) node.children.map(a => {
+                $('#active-node-children').append(newActiveChild(a));
+            });
+            
+            addListeners();
+        });
+    };
 };
 
+// TODO create partial, fill in values with jQuery
 function newActiveChild(node) {
     let childLid,
         htmlChildLid;
@@ -463,15 +470,15 @@ function newActiveChild(node) {
     let minOcc = node['minimum_occurrences'];
     let maxOcc = node['maximum_occurrences'];
     
-    let values = '<div class="childKeys">' +
-    `<span class="childKey">${keys[0]}: <input type="text" id="${childLid}" name="${childLid}" value="${childLid}"></span>` + 
-    `<span class="childKey">${keys[1]}: <select id="${reference_type}" name="${reference_type}">
-    <option value="component_of">component_of</option>
-    <option value="attribute_of">attribute_of</option>
-    </select></span>` + 
-    `<span class="childKey">${keys[2]}: <input type="text" id="${minOcc}" name="${minOcc}" value="${minOcc}"></span>` + 
-    `<span class="childKey">${keys[3]}: <input type="text" id="${maxOcc}" name="${maxOcc}" value="${maxOcc}"></span>` + 
-    '</div>';
+    let values = '<div class="child-keys">';
+    values += `<label class="child-key" for="${keys[0]}">${keys[0]}: <input type="text" id="${childLid}" name="${childLid}" value="${childLid}"></label>`;
+    values += `<label class="child-key" for="${keys[1]}">${keys[1]}: <select id="${reference_type}" name="${reference_type}">`;
+    values += `<option value="component_of">component_of</option>`;
+    values += `<option value="attribute_of">attribute_of</option>`;
+    values += `</select></label>`;
+    values += `<label class="child-key" for="${keys[2]}">${keys[2]}: <input type="text" id="${minOcc}" name="${minOcc}" value="${minOcc}"></label>`;
+    values += `<label class="child-key" for="${keys[3]}">${keys[3]}: <input type="text" id="${maxOcc}" name="${maxOcc}" value="${maxOcc}"></label>`;
+    values += `</div>`;
     
     let childButtons = `<div class="active-child-buttons ${htmlChildLid}"><i class="fas fa-lg fa-trash-alt"></i></div>`;
     
@@ -500,21 +507,19 @@ function addListeners() {
             return;
         }
     });
-};
 
-$('#download').on('click',function(e) {
-    e.preventDefault();
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:3000/jsontoxml',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(data.model),
-        success: function(res) {
-            console.log(res);
-            var blob = new Blob([res], {type: "text/xml;charset=utf-8"});
-            saveAs(blob,'ldd.out.xml');
-        }
+    $('#download').on('click',function() {
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:3000/jsontoxml',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(data.model),
+            success: function(res) {
+                var blob = new Blob([res], {type: "text/xml;charset=utf-8"});
+                saveAs(blob,'ldd.out.xml');
+            }
+        });
     });
-});
+};
