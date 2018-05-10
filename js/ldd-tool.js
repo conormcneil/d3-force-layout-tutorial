@@ -71,8 +71,6 @@ function main(json) {
 };
 
 function update() {
-    // console.log(data.nodes);
-    console.log(data.links);
     var tIn = d3.transition()
         .duration(1000);
 
