@@ -295,32 +295,24 @@ var g1,
     g3;
 function toggleNodes(node) {
     activeNodes = [];
-    
-    if (node) {
-        g1 = [node];
-        g2 = nextGen(g1);
-        g3 = nextGen(g2);
-    } else {
-        g2 = nextGen(g1);
-        g3 = nextGen(g2);
-        nodeGen = g1.concat(g2);
-        activeNodes = activeNodes
-            .concat(g1)
-            .concat(g2)
-            .concat(g3)
-    }
 
     if (activeNode == node) {
         updateToolbar(null);
         activeNode = null;
         nodeGen = [];
     } else if (!node) {
+        g2 = nextGen(g1);
+        g3 = nextGen(g2);
+        nodeGen = g1.concat(g2);
         activeNodes = activeNodes
             .concat(g1)
             .concat(g2)
             .concat(g3);
         updateToolbar();
     } else {
+        g1 = [node];
+        g2 = nextGen(g1);
+        g3 = nextGen(g2);
         nodeGen = g1.concat(g2);
         activeNode = node;
         activeNodes = activeNodes
