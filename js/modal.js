@@ -18,7 +18,6 @@ function createNode() {
 };
 
 function openModal() {
-    console.log('opening modal');
     $('#create-node-modal').empty();
     
     $('#create-node-modal').load('partials/create.1.html',addListeners);
