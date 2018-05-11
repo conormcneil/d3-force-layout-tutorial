@@ -485,10 +485,6 @@ function newActiveChild(node) {
     
     let values = '<div class="child-keys">';
     values += `<label class="child-key" for="${keys[0]}">${keys[0]}: <input type="text" id="${childLid}" name="${childLid}" value="${childLid}"></label>`;
-    values += `<label class="child-key" for="${keys[1]}">${keys[1]}: <select id="${reference_type}" name="${reference_type}">`;
-    values += `<option value="component_of">component_of</option>`;
-    values += `<option value="attribute_of">attribute_of</option>`;
-    values += `</select></label>`;
     values += `<label class="child-key" for="${keys[2]}">${keys[2]}: <input type="text" id="${minOcc}" name="${minOcc}" value="${minOcc}"></label>`;
     values += `<label class="child-key" for="${keys[3]}">${keys[3]}: <input type="text" id="${maxOcc}" name="${maxOcc}" value="${maxOcc}"></label>`;
     values += `</div>`;
