@@ -339,7 +339,14 @@ function Data(json) {
             maximum_occurrences: [node.maximum_occurrences],
             name: [node.name]
         };
-        let modelParent = this.model['Ingest_LDD']['DD_Class'].find(p => { return p['local_identifier'][0] == activeNode.lid; });
+        let modelParent = this.model['Ingest_LDD']['DD_Class'].find(p => { 
+            try {
+                return p['local_identifier'][0] == activeNode.lid;
+            } catch (err) {
+                return p['identifier_reference'][0] == activeNode.lid;
+            }
+        });
+            
         let modelIdx = this.model['Ingest_LDD']['DD_Class'].indexOf(modelParent);
 
         this.model['Ingest_LDD']['DD_Class'][modelIdx]['DD_Association'].push(nodeInstance);

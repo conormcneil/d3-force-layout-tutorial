@@ -324,8 +324,14 @@ function toggleNodes(node) {
 
     svg.selectAll('.link')
         .style('stroke', function(link) {
-            let _lid = getNodeByIdx(link.source)['local_identifier'][0];
-
+            let _lid;
+            
+            try {
+                _lid = getNodeByIdx(link.source)['local_identifier'][0];
+            } catch (err) {
+                _lid = getNodeByIdx(link.source)['identifier_reference'][0];
+            }
+            
             return nodeGen.find(d => {
                 try {
                     return d['local_identifier'][0] == _lid;
@@ -335,8 +341,14 @@ function toggleNodes(node) {
             }) ? linkHighlightStroke : linkStroke;
         })
         .style('stroke-width', function(link) {
-            let _lid = getNodeByIdx(link.source)['local_identifier'][0];
-
+            let _lid;
+            
+            try {
+                _lid = getNodeByIdx(link.source)['local_identifier'][0];
+            } catch (err) {
+                _lid = getNodeByIdx(link.source)['identifier_reference'][0];
+            }
+            
             return nodeGen.find(d => {
                 try {
                     return d['local_identifier'][0] == _lid;
