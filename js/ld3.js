@@ -425,6 +425,7 @@ function updateToolbar(flag) {
     $('#create-node').remove();
     
     if (flag === null) return defaultToolbar();
+    else if (activeNode && activeNode.className == "attribute") return defaultToolbar();
     else return nodeToolbar();
     
     function defaultToolbar() {
@@ -435,7 +436,7 @@ function updateToolbar(flag) {
         $('#tools').load('partials/tools.node.html',function() {
             var node = activeNode;
             // update toolbar - node title
-            $('#active-node-title').text('node.lid');
+            $('#active-node-title').text(node.lid);
             
             // update toolbar - node children
             if (node.children) node.children.map(a => {
