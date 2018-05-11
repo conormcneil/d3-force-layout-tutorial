@@ -75,6 +75,25 @@ button, i {
 #create-node {
     color: black;
 }
+#create-node-modal {
+    text-align: center;
+}
+#create-new-node /* modal form */ {
+    margin: 2em 0 0;
+    background: white;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+#cancel, #next, #submit {
+    margin: 2em 1em;
+}
+#create-new-node label {
+    margin: 0.5em 0;
+}
+#create-new-node input, #create-new-node select {
+    margin: 0 0 0 0.5em;
+}
 #create-node-disabled {
     cursor: default;
     color: #acacac;
