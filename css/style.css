@@ -35,7 +35,7 @@ button, i {
     display: none;
     position: relative;
     background: white;
-    width: 40vw;
+    width: 30vw;
     min-height: 40vh;
     display: flex;
     justify-content: center;
@@ -71,7 +71,6 @@ button, i {
     overflow: scroll;
 }
 #tools {
-    /*background: pink;*/
     padding: 0.2em;
 }
 #create-node {
@@ -82,10 +81,6 @@ button, i {
 }
 #create-new-node /* modal form */ {
     margin: 2em 0 0;
-    background: white;
-    display: flex;
-    flex-flow: column;
-    align-items: center;
 }
 #cancel, #next, #submit {
     margin: 2em 1em;
@@ -132,4 +127,14 @@ button, i {
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
     padding: 0;
+}
+
+form {
+    display: flex;
+    flex-flow: column;
+}
+label {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
 }
