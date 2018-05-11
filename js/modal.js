@@ -58,7 +58,7 @@ function saveNode() {
     v_id = document.getElementById('version_id').value;
     s_n = document.getElementById('submitter_name').value;
     def = document.getElementById('definition').value;
-    if (r_t == 'attribute_of') n_f = document.getElementById('nillable_flag').value;
+    if (r_t == 'attribute_of') n_f = $('input[name=nillable_flag]:checked').val();
     
     newNode.name = name;
     newNode.version_id = v_id;
