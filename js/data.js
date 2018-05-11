@@ -9,9 +9,36 @@ function Data(json) {
     
     this.model = JSON.parse(json);
     
-    this.modelJson = function() {
-        return JSON.stringify(this.model);
-    };
+    this.pureModel = function() {
+        // make a copy of the model so the active copy is not altered
+        var model = JSON.stringify(this.model);
+        model = JSON.parse(model);
+        
+        // remove from:
+        // #DD_Attribute
+        model['Ingest_LDD']['DD_Attribute'] = model['Ingest_LDD']['DD_Attribute'].map(a => {
+            delete a['className'];
+            delete a['col'];
+            delete a['x'];
+            delete a['y'];
+            delete a['lid'];
+            
+            return a;
+        });
+        
+        // #DD_Class
+        model['Ingest_LDD']['DD_Class'] = model['Ingest_LDD']['DD_Attribute'].map(a => {
+            delete a['children'];
+            delete a['col'];
+            delete a['x'];
+            delete a['y'];
+            delete a['lid'];
+            
+            return a;
+        });
+        
+        return model;
+    }
 
     this.rootNodes = [];
     

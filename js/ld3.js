@@ -528,7 +528,7 @@ function addListeners() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: JSON.stringify(data.model),
+            data: JSON.stringify(data.pureModel()),
             success: function(res) {
                 var blob = new Blob([res], {type: "text/xml;charset=utf-8"});
                 saveAs(blob,'ldd.out.xml');
