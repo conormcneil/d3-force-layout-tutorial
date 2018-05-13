@@ -136,13 +136,15 @@ function Data(json) {
 
         // // // // // // // // // // //
         // identify and define root nodes
-        this.nodes.map((node, idx) => {
+        this.nodes = this.nodes.map((node, idx) => {
             let _match = this.links.find(link => link.target == idx);
             if (!_match) {
                 node.rootNode = true;
                 node.col = 1;
                 this.rootNodes.push(node);
-            }
+            };
+            
+            return node;
         });
         
         this.sortCols(this.rootNodes);
@@ -386,6 +388,19 @@ function Data(json) {
         });
         
         update();
+    };
+    
+    this.getParents = function(idx) {
+        var parents = [];
+        var childNode = this.nodes[idx];
+        
+        this.links.map(l => {
+            var source = l.source;
+            var target = l.target;
+            if (target == idx) parents.push(this.nodes[source]);
+        });
+        
+        return parents;
     };
     
     this.defineNodesAndLinks();

@@ -314,7 +314,9 @@ function toggleNodes(node) {
         g2 = nextGen(g1);
         g3 = nextGen(g2);
         nodeGen = g1.concat(g2);
-        activeNode = node;
+        var nodeIdx = data.getNode(node.lid,true);
+        activeNode = data.nodes[nodeIdx];
+        activeNode.parents = data.getParents(nodeIdx);
         activeNodes = activeNodes
             .concat(g1)
             .concat(g2)
@@ -437,7 +439,6 @@ function updateToolbar(flag) {
     $('#create-node').remove();
     
     if (flag === null) return defaultToolbar();
-    else if (activeNode && activeNode.className == "attribute") return defaultToolbar();
     else return nodeToolbar();
     
     function defaultToolbar() {
