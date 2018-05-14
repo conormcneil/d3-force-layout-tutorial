@@ -16,6 +16,7 @@ var id,
     linkHighlightStrokeWidth = '5px',
     linkStroke = 'black',
     linkStrokeWidth = '1px',
+    linkMode = false,
     // Nodes
     rx = 100, // x radius of ellipse
     ry = 30, // y radius of ellipse
@@ -294,6 +295,8 @@ var g1,
     g2,
     g3;
 function toggleNodes(node) {
+    if (linkMode) return data.createLink(node);
+    
     activeNodes = [];
 
     if (activeNode == node) {
@@ -314,7 +317,9 @@ function toggleNodes(node) {
         g2 = nextGen(g1);
         g3 = nextGen(g2);
         nodeGen = g1.concat(g2);
-        activeNode = node;
+        var nodeIdx = data.getNode(node.lid,true);
+        activeNode = data.nodes[nodeIdx];
+        activeNode.parents = data.getParents(nodeIdx);
         activeNodes = activeNodes
             .concat(g1)
             .concat(g2)
@@ -434,10 +439,10 @@ function getNodeByIdx(nodeIdx) {
 function updateToolbar(flag) {
     $('#active-node-title').empty();
     $('#active-node-children').empty();
+    $('#active-node-parents').empty();
     $('#create-node').remove();
     
     if (flag === null) return defaultToolbar();
-    else if (activeNode && activeNode.className == "attribute") return defaultToolbar();
     else return nodeToolbar();
     
     function defaultToolbar() {
@@ -451,9 +456,26 @@ function updateToolbar(flag) {
             $('#active-node-title').text(node.lid);
             
             // update toolbar - node children
-            if (node.children) node.children.map(a => {
-                $('#active-node-children').append(newActiveChild(a));
-            });
+            if (node.children) {
+                $('#active-children-title').text(`Children (${node.children.length})`);
+                
+                node.children.map(a => {
+                    $('#active-node-children').append(newActiveChild(a));
+                });
+            } else {
+                $('#active-children-title').text(`Children (0)`);
+            }
+            
+            // update toolbar - node parents
+            if (node.parents) {    
+                $('#active-parents-title').text(`Parents (${node.parents.length})`);
+                
+                node.parents.map(p => {
+                    $('#active-node-parents').append(newActiveChild(p));
+                });
+            } else {
+                $('#active-parents-title').text(`Parents (0)`);
+            }
             
             addListeners();
         });
@@ -501,7 +523,9 @@ function addListeners() {
 
     $('#save').on('click', saveNode);
     
-    $('#create-node').on('click',createNode);
+    $('#create-node').on('click', data.createNode);
+    
+    $('#create-link').on('click', data.linkMode);
     
     // add event listeners to trash icons now that they exist in DOM
     $('.fa-trash-alt').on('click',function(event) {

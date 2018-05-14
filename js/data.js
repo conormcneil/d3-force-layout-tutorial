@@ -1,5 +1,5 @@
 function Data(json) {
-    let _col = 1;
+    let _col;
     
     this.originalJsonString = json;
     
@@ -11,33 +11,26 @@ function Data(json) {
     
     this.pureModel = function() {
         // make a copy of the model so the active copy is not altered
-        var model = JSON.stringify(this.model);
-        model = JSON.parse(model);
+        var model = JSON.parse(JSON.stringify(this.model));
         
-        // remove from:
-        // #DD_Attribute
-        model['Ingest_LDD']['DD_Attribute'] = model['Ingest_LDD']['DD_Attribute'].map(a => {
+        function scrapeCustomKeywords(a) {
+            delete a['children'];
             delete a['className'];
             delete a['col'];
+            delete a['lid'];
             delete a['x'];
             delete a['y'];
-            delete a['lid'];
             
             return a;
-        });
+        };
+        
+        // #DD_Attribute
+        this.model['Ingest_LDD']['DD_Attribute'] = this.model['Ingest_LDD']['DD_Attribute'].map(scrapeCustomKeywords);
         
         // #DD_Class
-        model['Ingest_LDD']['DD_Class'] = model['Ingest_LDD']['DD_Attribute'].map(a => {
-            delete a['children'];
-            delete a['col'];
-            delete a['x'];
-            delete a['y'];
-            delete a['lid'];
-            
-            return a;
-        });
+        this.model['Ingest_LDD']['DD_Class'] = this.model['Ingest_LDD']['DD_Class'].map(scrapeCustomKeywords);
         
-        return model;
+        return this.model;
     }
 
     this.rootNodes = [];
@@ -143,14 +136,18 @@ function Data(json) {
 
         // // // // // // // // // // //
         // identify and define root nodes
-        this.nodes.map((node, idx) => {
+        this.nodes = this.nodes.map((node, idx) => {
             let _match = this.links.find(link => link.target == idx);
             if (!_match) {
                 node.rootNode = true;
                 node.col = 1;
                 this.rootNodes.push(node);
-            }
+            };
+            
+            return node;
         });
+        
+        _col = 1;
         
         this.sortCols(this.rootNodes);
     };
@@ -256,6 +253,8 @@ function Data(json) {
         this.removeAssociation(lid);
         
         update();
+        
+        toggleNodes();
     };
     
     this.parents = function(lid,getIdx) {
@@ -391,6 +390,69 @@ function Data(json) {
             target: parentIdx + 1,
             id: `${parent.lid}:${node.lid}`
         });
+        
+        update();
+    };
+    
+    this.getParents = function(idx) {
+        var parents = [];
+        var childNode = this.nodes[idx];
+        
+        this.links.map(l => {
+            var source = l.source;
+            var target = l.target;
+            if (target == idx) parents.push(this.nodes[source]);
+        });
+        
+        return parents;
+    };
+    
+    this.createNode = function() {
+        createNodeModal();
+    };
+    
+    this.createLink = function(node) {
+        var sourceIdx = data.getNode(activeNode.lid,true);
+        var targetIdx = data.getNode(node.lid,true);
+        var parentIdx = (sourceIdx < targetIdx) ? sourceIdx : targetIdx;
+        var childIdx = (sourceIdx > targetIdx) ? sourceIdx : targetIdx;
+        // 
+        var parent = data.nodes[parentIdx];
+        var child = data.nodes[childIdx];
+        
+        var model = data.model['Ingest_LDD']['DD_Class'].map(c => {
+            if (c.lid == parent.lid) {
+                c['DD_Association'].push(child);
+                c['children'].push(child);
+            };
+        });
+        
+        this.linkMode(null);
+        
+        this.defineNodesAndLinks();
+        
+        update();
+    };
+    
+    this.linkMode = function(node) {
+        if (!node || node == null) linkMode = false;
+        else linkMode = true;
+    };
+    
+    this.addNewLink = function(obj) {
+        var sourceIdx = data.getNode(obj.source.lid,true);
+        var targetIdx = data.getNode(obj.target.lid,true);
+        var id = `${obj.source.lid}:${obj.target.lid}`;
+        
+        this.links.push({
+            source: sourceIdx,
+            target: targetIdx,
+            id: id
+        });
+        
+        this.linkMode(null);
+        
+        toggleNodes();
         
         update();
     };

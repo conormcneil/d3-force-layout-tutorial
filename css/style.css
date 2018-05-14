@@ -73,9 +73,6 @@ button, i {
 #tools {
     padding: 0.2em;
 }
-#create-node {
-    color: black;
-}
 #create-node-modal {
     text-align: center;
 }
@@ -91,7 +88,11 @@ button, i {
 #create-new-node input, #create-new-node select {
     margin: 0 0 0 0.5em;
 }
-#create-node-disabled {
+.enabled {
+    cursor: pointer;
+    color: black;
+}
+.disabled {
     cursor: default;
     color: #acacac;
 }
@@ -99,11 +100,15 @@ button, i {
     text-align: center;
     margin: 1em 0;
 }
-#active-node-children {
+#active-node-children, #active-node-parents {
     display: flex;
     flex-flow: column;
     align-items: center;
+    /* position: relative; */
 }
+/* #active-node-parents {
+    margin-top: 5em;
+} */
 .active-child {
     text-align: center;
     width: 80%;
