@@ -109,8 +109,11 @@ button, i {
     display: flex;
     flex-flow: column;
     align-items: center;
-    position: relative;
+    /* position: relative; */
 }
+/* #active-node-parents {
+    margin-top: 5em;
+} */
 .active-child {
     text-align: center;
     width: 80%;

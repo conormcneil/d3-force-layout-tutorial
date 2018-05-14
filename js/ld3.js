@@ -16,6 +16,7 @@ var id,
     linkHighlightStrokeWidth = '5px',
     linkStroke = 'black',
     linkStrokeWidth = '1px',
+    linkMode = false,
     // Nodes
     rx = 100, // x radius of ellipse
     ry = 30, // y radius of ellipse
@@ -294,6 +295,8 @@ var g1,
     g2,
     g3;
 function toggleNodes(node) {
+    if (linkMode) return data.createLink(node);
+    
     activeNodes = [];
 
     if (activeNode == node) {
@@ -459,16 +462,19 @@ function updateToolbar(flag) {
                 node.children.map(a => {
                     $('#active-node-children').append(newActiveChild(a));
                 });
+            } else {
+                $('#active-children-title').text(`Children (0)`);
             }
             
             // update toolbar - node parents
-            if (node.parents) {
+            if (node.parents) {    
                 $('#active-parents-title').text(`Parents (${node.parents.length})`);
-                
                 
                 node.parents.map(p => {
                     $('#active-node-parents').append(newActiveChild(p));
                 });
+            } else {
+                $('#active-parents-title').text(`Parents (0)`);
             }
             
             addListeners();
@@ -521,7 +527,9 @@ function addListeners() {
 
     $('#save').on('click', saveNode);
     
-    $('#create-node').on('click',createNode);
+    $('#create-node').on('click', data.createNode);
+    
+    $('#create-link').on('click', data.linkMode);
     
     // add event listeners to trash icons now that they exist in DOM
     $('.fa-trash-alt').on('click',function(event) {

@@ -1,5 +1,5 @@
 function Data(json) {
-    let _col = 1;
+    let _col;
     
     this.originalJsonString = json;
     
@@ -147,6 +147,8 @@ function Data(json) {
             return node;
         });
         
+        _col = 1;
+        
         this.sortCols(this.rootNodes);
     };
     
@@ -251,6 +253,8 @@ function Data(json) {
         this.removeAssociation(lid);
         
         update();
+        
+        toggleNodes();
     };
     
     this.parents = function(lid,getIdx) {
@@ -401,6 +405,56 @@ function Data(json) {
         });
         
         return parents;
+    };
+    
+    this.createNode = function() {
+        createNodeModal();
+    };
+    
+    this.createLink = function(node) {
+        var sourceIdx = data.getNode(activeNode.lid,true);
+        var targetIdx = data.getNode(node.lid,true);
+        var parentIdx = (sourceIdx < targetIdx) ? sourceIdx : targetIdx;
+        var childIdx = (sourceIdx > targetIdx) ? sourceIdx : targetIdx;
+        // 
+        var parent = data.nodes[parentIdx];
+        var child = data.nodes[childIdx];
+        
+        var model = data.model['Ingest_LDD']['DD_Class'].map(c => {
+            if (c.lid == parent.lid) {
+                c['DD_Association'].push(child);
+                c['children'].push(child);
+            };
+        });
+        
+        this.linkMode(null);
+        
+        this.defineNodesAndLinks();
+        
+        update();
+    };
+    
+    this.linkMode = function(node) {
+        if (!node || node == null) linkMode = false;
+        else linkMode = true;
+    };
+    
+    this.addNewLink = function(obj) {
+        var sourceIdx = data.getNode(obj.source.lid,true);
+        var targetIdx = data.getNode(obj.target.lid,true);
+        var id = `${obj.source.lid}:${obj.target.lid}`;
+        
+        this.links.push({
+            source: sourceIdx,
+            target: targetIdx,
+            id: id
+        });
+        
+        this.linkMode(null);
+        
+        toggleNodes();
+        
+        update();
     };
     
     this.defineNodesAndLinks();

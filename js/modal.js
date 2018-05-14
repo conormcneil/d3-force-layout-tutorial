@@ -1,7 +1,7 @@
 var modal = null;
 var newNode = {};
 
-function createNode() {
+function createNodeModal() {
     // reset newNode
     newNode = {};
     
@@ -50,8 +50,8 @@ function next() {
     
     $('#create-node-modal').empty();
     
-    if (r_t == 'component_of')$('#create-node-modal').load('partials/create.2.class.html',addListeners);
-    else if (r_t == 'attribute_of')$('#create-node-modal').load('partials/create.2.attribute.html',addListeners);
+    if (r_t == 'component_of') $('#create-node-modal').load('partials/create.2.class.html',addListeners);
+    else if (r_t == 'attribute_of') $('#create-node-modal').load('partials/create.2.attribute.html',addListeners);
 };
 
 function saveNode() {
