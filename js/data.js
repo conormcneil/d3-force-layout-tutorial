@@ -412,11 +412,21 @@ function Data(json) {
     };
     
     this.createLink = function(node) {
+        var sourceCol = data.getNode(activeNode.lid).col;
+        var targetCol = data.getNode(node.lid).col;
         var sourceIdx = data.getNode(activeNode.lid,true);
         var targetIdx = data.getNode(node.lid,true);
-        var parentIdx = (sourceIdx < targetIdx) ? sourceIdx : targetIdx;
-        var childIdx = (sourceIdx > targetIdx) ? sourceIdx : targetIdx;
-        // 
+        var parentIdx,
+            childIdx;
+        
+        if (sourceCol == targetCol) {
+            parentIdx = sourceIdx;
+            childIdx = targetIdx;
+        } else {
+            parentIdx = (sourceCol < targetCol) ? sourceIdx : targetIdx;
+            childIdx = (sourceCol > targetCol) ? sourceIdx : targetIdx;
+        }
+        
         var parent = data.nodes[parentIdx];
         var child = data.nodes[childIdx];
         
@@ -435,33 +445,10 @@ function Data(json) {
     };
     
     this.linkMode = function(node) {
-        console.log(node);
         if (!node || node == null) linkMode = false;
         else linkMode = true;
         
         updateToolbar();
-        
-        $('#create-link').on('click',function(event) {
-            console.log(event);
-        })
-    };
-    
-    this.addNewLink = function(obj) {
-        var sourceIdx = data.getNode(obj.source.lid,true);
-        var targetIdx = data.getNode(obj.target.lid,true);
-        var id = `${obj.source.lid}:${obj.target.lid}`;
-        
-        this.links.push({
-            source: sourceIdx,
-            target: targetIdx,
-            id: id
-        });
-        
-        this.linkMode(null);
-        
-        toggleNodes();
-        
-        update();
     };
     
     this.defineNodesAndLinks();
