@@ -70,6 +70,8 @@ function main(json) {
         .attr('class', 'tree');
 
     update();
+    
+    updateToolbar(null);
 };
 
 function update() {
@@ -321,15 +323,12 @@ function toggleNodes(node) {
             .concat(g3);
         updateToolbar();
     } else {
-        console.log(data.nodes);
         g1 = [node];
         g2 = nextGen(g1);
         g3 = nextGen(g2);
         nodeGen = g1.concat(g2);
         var nodeIdx = data.getNode(node.lid,true);
-        console.log(nodeIdx);
         activeNode = data.nodes[nodeIdx];
-        console.log(activeNode);
         activeNode.parents = data.getParents(nodeIdx);
         activeNodes = activeNodes
             .concat(g1)
@@ -448,8 +447,6 @@ function getNodeByIdx(nodeIdx) {
 };
 
 function updateToolbar(flag) {
-    
-    
     if (flag === null) return defaultToolbar();
     else if (linkMode) return linkModeToolbar();
     else return nodeToolbar();
@@ -457,7 +454,9 @@ function updateToolbar(flag) {
     function defaultToolbar() {
         resetToolbar();
         
-        $('#tools').load('partials/tools.default.html');
+        $('#tools').load('partials/tools.default.html', function() {
+            $('#active-node-title').text('LD3 Tool')
+        });
     };
     
     function nodeToolbar() {
@@ -500,6 +499,8 @@ function updateToolbar(flag) {
     
     function resetToolbar() {
         $('#active-node-title').empty();
+        $('#active-children-title').empty();
+        $('#active-parents-title').empty();
         $('#active-node-children').empty();
         $('#active-node-parents').empty();
         $('#create-node').remove();
