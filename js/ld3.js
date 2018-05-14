@@ -1,7 +1,7 @@
 var id,
     data,
     svg,
-    ldd = 'wave',
+    ldd = 'particle',
     toolbarWidth = '400',
     width = $(document).width() - toolbarWidth,
     height = $(document).height(),
@@ -297,6 +297,14 @@ var g1,
 function toggleNodes(node) {
     if (linkMode) return data.createLink(node);
     
+    if (!node.lid) {
+        try {
+            node.lid = node['local_identifier'][0];
+        } catch (err) {
+            node.lid = node['identifier-reference'][0];
+        }
+    }
+    
     activeNodes = [];
 
     if (activeNode == node) {
@@ -313,12 +321,15 @@ function toggleNodes(node) {
             .concat(g3);
         updateToolbar();
     } else {
+        console.log(data.nodes);
         g1 = [node];
         g2 = nextGen(g1);
         g3 = nextGen(g2);
         nodeGen = g1.concat(g2);
         var nodeIdx = data.getNode(node.lid,true);
+        console.log(nodeIdx);
         activeNode = data.nodes[nodeIdx];
+        console.log(activeNode);
         activeNode.parents = data.getParents(nodeIdx);
         activeNodes = activeNodes
             .concat(g1)
@@ -565,6 +576,7 @@ function addListeners() {
             success: function(res) {
                 var blob = new Blob([res], {type: "text/xml;charset=utf-8"});
                 saveAs(blob,'ldd.out.xml');
+                data.defineNodesAndLinks();
             }
         });
     });

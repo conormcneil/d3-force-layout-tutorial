@@ -15,6 +15,7 @@ function Data(json) {
         
         function scrapeCustomKeywords(a) {
             delete a['children'];
+            delete a['parents'];
             delete a['className'];
             delete a['col'];
             delete a['lid'];
@@ -53,10 +54,12 @@ function Data(json) {
         this.nodes = _classes.map(e => {
             let links = e['DD_Association'];
             
-            if (links && links.length) {
-                e.className = 'class';
-            } else {
-                e.className = 'attribute';
+            if (!e.className) {
+                if (links && links.length) {
+                    e.className = 'class';
+                } else {
+                    e.className = 'attribute';
+                }
             }
             
             return e;
@@ -328,16 +331,18 @@ function Data(json) {
     this.addNode = function(node) {
         let type = node.reference_type == 'component_of' ? 'class' : 'attribute';
         let modelArray = type == 'class' ? 'DD_Class' : 'DD_Attribute';
-        
+
         // // // // // UPDATE MODEL // // // // //
         // add global keyword definition
         let nodeGlobal = {
             name: [node.name],
+            className: type,
             version_id: [node.version_id],
             identifier_reference: [node.identifier_reference],
             submitter_name: [node.submitter_name],
             definition: [node.definition]
         };
+
         if (type == 'class') {
             nodeGlobal['DD_Association'] = [];
             nodeGlobal['children'] = [];
@@ -345,6 +350,7 @@ function Data(json) {
             nodeGlobal['nillable_flag'] = [node.nillable_flag],
             nodeGlobal['DD_Value_Domain'] = [];
         }
+
         this.model['Ingest_LDD'][modelArray].push(nodeGlobal);
         
         // add keyword instance definiton to 
@@ -383,13 +389,7 @@ function Data(json) {
         let parent = this.nodes.find(el => { return el.lid == activeNode.lid; });
         let parentIdx = this.nodes.indexOf(parent);
         
-        this.nodes.splice(parentIdx + 1,0,nodeInstance);
-        
-        this.links.push({
-            source: parentIdx,
-            target: parentIdx + 1,
-            id: `${parent.lid}:${node.lid}`
-        });
+        this.defineNodesAndLinks();
         
         update();
     };
@@ -430,11 +430,13 @@ function Data(json) {
         var parent = data.nodes[parentIdx];
         var child = data.nodes[childIdx];
         
-        var model = data.model['Ingest_LDD']['DD_Class'].map(c => {
+        data.model['Ingest_LDD']['DD_Class'] = data.model['Ingest_LDD']['DD_Class'].map(c => {
             if (c.lid == parent.lid) {
                 c['DD_Association'].push(child);
                 c['children'].push(child);
             };
+            
+            return c;
         });
         
         this.linkMode(null);
