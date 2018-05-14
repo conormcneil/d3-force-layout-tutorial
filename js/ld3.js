@@ -437,19 +437,21 @@ function getNodeByIdx(nodeIdx) {
 };
 
 function updateToolbar(flag) {
-    $('#active-node-title').empty();
-    $('#active-node-children').empty();
-    $('#active-node-parents').empty();
-    $('#create-node').remove();
+    
     
     if (flag === null) return defaultToolbar();
+    else if (linkMode) return linkModeToolbar();
     else return nodeToolbar();
     
     function defaultToolbar() {
+        resetToolbar();
+        
         $('#tools').load('partials/tools.default.html');
     };
     
     function nodeToolbar() {
+        resetToolbar();
+        
         $('#tools').load('partials/tools.node.html',function() {
             var node = activeNode;
             // update toolbar - node title
@@ -479,6 +481,17 @@ function updateToolbar(flag) {
             
             addListeners();
         });
+    };
+    
+    function linkModeToolbar() {
+        $('#tools').load('partials/tools.link-mode.html');
+    };
+    
+    function resetToolbar() {
+        $('#active-node-title').empty();
+        $('#active-node-children').empty();
+        $('#active-node-parents').empty();
+        $('#create-node').remove();
     };
 };
 

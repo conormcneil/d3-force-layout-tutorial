@@ -435,8 +435,15 @@ function Data(json) {
     };
     
     this.linkMode = function(node) {
+        console.log(node);
         if (!node || node == null) linkMode = false;
         else linkMode = true;
+        
+        updateToolbar();
+        
+        $('#create-link').on('click',function(event) {
+            console.log(event);
+        })
     };
     
     this.addNewLink = function(obj) {
