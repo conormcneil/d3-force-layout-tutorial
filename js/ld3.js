@@ -436,6 +436,7 @@ function getNodeByIdx(nodeIdx) {
 function updateToolbar(flag) {
     $('#active-node-title').empty();
     $('#active-node-children').empty();
+    $('#active-node-parents').empty();
     $('#create-node').remove();
     
     if (flag === null) return defaultToolbar();
@@ -452,9 +453,23 @@ function updateToolbar(flag) {
             $('#active-node-title').text(node.lid);
             
             // update toolbar - node children
-            if (node.children) node.children.map(a => {
-                $('#active-node-children').append(newActiveChild(a));
-            });
+            if (node.children) {
+                $('#active-children-title').text(`Children (${node.children.length})`);
+                
+                node.children.map(a => {
+                    $('#active-node-children').append(newActiveChild(a));
+                });
+            }
+            
+            // update toolbar - node parents
+            if (node.parents) {
+                $('#active-parents-title').text(`Parents (${node.parents.length})`);
+                
+                
+                node.parents.map(p => {
+                    $('#active-node-parents').append(newActiveChild(p));
+                });
+            }
             
             addListeners();
         });
